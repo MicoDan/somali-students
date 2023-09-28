@@ -9,9 +9,12 @@ interface StoreContextType {
     dispatch: React.Dispatch<any>;
 }
 
+const defaultStoreContext: StoreContextType = {
+    state: initialState,
+    dispatch: () => {}, 
+  };
 
-export const Store = createContext<StoreContextType | undefined>(undefined)
-
+export const Store = createContext<StoreContextType>(defaultStoreContext)
 interface StoreProviderProps {
     children: ReactNode;
 }
