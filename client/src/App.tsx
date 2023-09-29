@@ -3,6 +3,7 @@ import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
 import HomeScreen from './pages/HomeScreen'
 import favicon from '/favicon.ico'
 import _bgsnow from '/bg-snow.svg'
+import Learn from './pages/learn'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         </header>
         <Routes>
           <Route path="/" element={<HomeScreen />} />
+          <Route path='/learn' element={<Learn />} />
         </Routes>
       </div>
     </BrowserRouter>

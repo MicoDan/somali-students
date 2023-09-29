@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState, useContext } from "react";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Store } from "../redux/Share_store";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { CloseSvg } from "./Svgs";
+import Loader from "./Loader";
 
 
 
@@ -10,18 +13,19 @@ import { Store } from "../redux/Share_store";
 export type LoginScreenState = "HIDDEN" | "LOGIN" | "SIGNUP";
 
 export const useLoginScreen = () => {
-    const { state, dispatch } = useContext(Store);
-    const {userInfo} = state; 
-//   const loggedIn = useBoundStore((x) => x.loggedIn);
-//   const queryState: LoginScreenState = (() => {
-//     if (loggedIn) return "HIDDEN";
-//     if ("login" in router.query) return "LOGIN";
-//     if ("sign-up" in router.query) return "SIGNUP";
-//     return "HIDDEN";
-//   })();
-//   const [loginScreenState, setLoginScreenState] = useState(queryState);
-//   useEffect(() => setLoginScreenState(queryState), [queryState]);
-//   return { loginScreenState, setLoginScreenState };
+  const location = useLocation()
+  const { state } = useContext(Store);
+  const { userSlice } = state;
+  const loggedIn = userSlice.loggedIn;
+  const queryState: LoginScreenState = (() => {
+    if (loggedIn) return "HIDDEN";
+    if (location.search.includes("login")) return "LOGIN";
+    if (location.search.includes("sign-up")) return "SIGNUP";
+    return "HIDDEN";
+  })();
+  const [loginScreenState, setLoginScreenState] = useState(queryState);
+  useEffect(() => setLoginScreenState(queryState), [queryState]);
+  return { loginScreenState, setLoginScreenState };
 };
 
 export const LoginScreen = ({
@@ -31,39 +35,20 @@ export const LoginScreen = ({
   loginScreenState: LoginScreenState;
   setLoginScreenState: React.Dispatch<React.SetStateAction<LoginScreenState>>;
 }) => {
-//   const router = useRouter();
-  const loggedIn = useBoundStore((x) => x.loggedIn);
+  const { state, dispatch } = useContext(Store);
+  const { userSlice, loaderSlice } = state;
+  const loggedIn = userSlice.loggedIn;
   const nameInputRef = useRef<null | HTMLInputElement>(null);
-  if (typeof window !== 'undefined') {
-    const storedUserData = localStorage.getItem('userData');
-    if (storedUserData) {
-      const userData = JSON.parse(storedUserData);
-      if (userData && userData._id && userData.username && userData.email) {
-        const user = useBoundStore((x) => {
-          x._id = userData._id;
-          x.username = userData.username;
-          x.email = userData.email;
-          x.photo = userData.photo;
-          x.isAdmin = userData.isAdmin;
-          x.token = userData.token;
-          x.loggedIn = true;
-        });
-      } 
-    }
-  }
-  
-
+  const navigate = useNavigate()
   useEffect(() => {
     if (loginScreenState && loggedIn && loginScreenState !== "HIDDEN") {
       setLoginScreenState("HIDDEN");
     }
   }, [loginScreenState, loggedIn, setLoginScreenState]);
-  
 
 
 
-  const setLoading = useBoundStore((x) => x.setLoading)
-  const loading = useBoundStore((x) => x.isLoading)
+  const [ loading, setLoading ] = useState(loaderSlice.isLoading)
 
   const [loginInfo, setLoginInfo] = useState({
     email: '',
@@ -79,14 +64,15 @@ export const LoginScreen = ({
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/users/signin', loginInfo);
+      setLoading(true)
+      const { data } = await axios.post('http://localhost:5000/users/signin', loginInfo);
+      dispatch({type: 'LOG_IN', payload: data})
+      localStorage.setItem('userData', JSON.stringify(data))
+      setLoading(false)
       toast.success('login success')
-
-
-      localStorage.setItem('userData', JSON.stringify(response.data))
-      void router.push('/learn')
-
+      navigate('/learn')
     } catch (error) {
+      setLoading(false)
       toast.error('login not successful')
       console.error('Login Failed:', error);
     }
@@ -97,16 +83,16 @@ export const LoginScreen = ({
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/users/signup', signupInfo);
+      const { data } = await axios.post('http://localhost:5000/users/signup', signupInfo);
+      setLoading(false)
+      localStorage.setItem('userData', JSON.stringify(data))
+      dispatch({type: 'LOG_IN', payload: data})
+      setLoading(false)
       toast.success('signup successful')
-
-
-      // Signup successful, handle the response as needed
-      localStorage.setItem('userData', JSON.stringify(response.data))
-      void router.push('/learn')
+      navigate('/learn')
     } catch (error) {
+      setLoading(false)
       toast.error('signup not successful')
-      // Signup failed, handle the error
       console.log('Signup Failed:', error);
     }
   };
@@ -226,7 +212,7 @@ export const LoginScreen = ({
                   <div className="absolute bottom-0 right-0 top-0 flex items-center justify-center pr-5">
                     <Link
                       className="font-bold uppercase text-gray-400 hover:brightness-75"
-                      href="/forgot-password"
+                      to="/forgot-password"
                     >
                       Forgot?
                     </Link>
@@ -262,14 +248,14 @@ export const LoginScreen = ({
               By signing in to Social, you agree to our{" "}
               <Link
                 className="font-bold"
-                href="https://www.duolingo.com/terms?wantsPlainInfo=1"
+                to="https://www.duolingo.com/terms?wantsPlainInfo=1"
               >
                 Terms
               </Link>{" "}
               and{" "}
               <Link
                 className="font-bold"
-                href="https://www.duolingo.com/privacy?wantsPlainInfo=1"
+                to="https://www.duolingo.com/privacy?wantsPlainInfo=1"
               >
                 Privacy Policy
               </Link>

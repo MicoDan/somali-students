@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRouter from "./routes/userRoutes.js";
 import morgan from "morgan";
+import lessonRouter from "./routes/lessonRoutes.js";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/users", userRouter);
+app.use("/lessons", lessonRouter)
 
 //when a user types in the above endpoint they will be directed t o the seedRouter
 

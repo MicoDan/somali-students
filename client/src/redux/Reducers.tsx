@@ -76,7 +76,7 @@ export const streakSliceReducer = (state: StreakState = initialStreakState, acti
 };
 
 export const userSliceReducer = (state: UserState = initialUserState, action: RootAction): UserState => {
-    switch (action.type) {
+    switch (action.type) {  
         case 'LOG_IN':
             // Implement logic to update user state when logging in
             return { ...state, loggedIn: true };
@@ -86,8 +86,8 @@ export const userSliceReducer = (state: UserState = initialUserState, action: Ro
         default:
             return state;
     }
-};
-
+}
+    
 export const xpSliceReducer = (state: XpState = initialXpState, action: RootAction): XpState => {
     switch (action.type) {
       case 'INCREASE_XP':

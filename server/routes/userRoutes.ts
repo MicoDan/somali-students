@@ -92,7 +92,7 @@ userRouter.post("/picture", upload.single("file"),
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
-    const streamUpload = (req) => {
+    const streamUpload = (req: Request) => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream((error, result) => {
           if (result) {
@@ -101,7 +101,9 @@ userRouter.post("/picture", upload.single("file"),
             reject(error);
           }
         });
+        if(req.file){
         streamifier.createReadStream(req.file.buffer).pipe(stream);
+        }
       });
     };
     const result = await streamUpload(req);
