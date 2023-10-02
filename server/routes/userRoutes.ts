@@ -110,7 +110,7 @@ userRouter.post("/picture", upload.single("file"),
     res.send(result);
   });
 
-  userRouter.put(
+userRouter.put(
     '/profile',
     isAuth,
     expressAsyncHandler(async (req, res) => {
@@ -146,5 +146,42 @@ userRouter.post("/picture", upload.single("file"),
         res.status(404).send('user not found')
       }
     })
-  )
+)
+
+userRouter.post('/:userId/increaseLessonsCompleted', async (req, res) => {
+  const { userId } = req.params;
+  const  by  = req.body
+
+  try {
+    // Find the user by ID and update lessonsCompleted.
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $inc: { lessonsCompleted: by } },
+      { new: true, select: 'lessonsCompleted' } // Select only lessonsCompleted field
+    );
+
+    res.status(200).json({ lessonsCompleted: updatedUser?.lessonsCompleted });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to increase lessonsCompleted' });
+  }
+})
+
+userRouter.post('/:userId/increaseLingots', async (req, res) => {
+  const { userId } = req.params;
+  const  by  = req.body
+
+  try {
+    // Find the user by ID and update lingots.
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $inc: { lingots: by } },
+      { new: true, select: 'lingots' } // Select only lingots field
+    );
+
+    res.status(200).json({ lingots: updatedUser?.lingots });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to increase lingots' });
+  }
+})
+
 export default userRouter;

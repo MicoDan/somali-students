@@ -16,28 +16,28 @@ const userData: Record<string, any> | null = JSON.parse(localStorage.getItem('us
 
 const initialState = {
   goalXpSlice: {
-    goalXp: 10,
+    goalXp: userData ? userData.xp : '',
   } as GoalXpState,
   languageSlice: {
-    language: '', 
+    language: userData ? userData.language : '', 
   } as LanguageState,
   lessonSlice: {
-    lessonsCompleted: 0,
+    lessonsCompleted: userData ? userData.lessonsCompleted: '',
   } as LessonState,
   lingotSlice: {
-    lingots: 0,
+    lingots: userData ? userData.lingots : '',
   } as LingotState,
   loaderSlice: {
     isLoading: false,
   } as LoaderState,
   soundSlice: {
-    soundEffects: true,
-    speakingExercises: true,
-    listeningExercises: true,
+    soundEffects: userData ? userData.soundEffects : '',
+    speakingExercises: userData ? userData.speackingExercises : '',
+    listeningExercises: userData ? userData.listeningExercises : '',
   } as SoundSettingsState,
   streakSlice: {
     activeDays: new Set(),
-    streak: 0,
+    streak: userData ? userData.streak : '',
   } as StreakState,
   userSlice: {
     _id: userData ? userData._id : '',
@@ -49,7 +49,7 @@ const initialState = {
     loggedIn: userData ? userData.loggedIn : false,
   } as UserState,
   xpSlice: {
-    xpByDate: {},
+    xpByDate: userData ? userData.xpByDate : '',
   } as XpState,
 };
 

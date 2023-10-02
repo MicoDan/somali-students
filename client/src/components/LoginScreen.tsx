@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useContext } from "react";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Store } from "../redux/Share_store";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CloseSvg } from "./Svgs";
 import Loader from "./Loader";
 
@@ -13,7 +13,6 @@ import Loader from "./Loader";
 export type LoginScreenState = "HIDDEN" | "LOGIN" | "SIGNUP";
 
 export const useLoginScreen = () => {
-  const location = useLocation()
   const { state } = useContext(Store);
   const { userSlice } = state;
   const loggedIn = userSlice.loggedIn;

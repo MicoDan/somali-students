@@ -1,8 +1,12 @@
 import { Link } from 'react-router-dom'
 import { GlobeSvg } from '../components/Svgs'
 import _bgsnow from '/bg-snow.svg'
+import { LoginScreen, useLoginScreen } from '../components/LoginScreen';
 
 const HomeScreen = () => {
+
+    const { loginScreenState, setLoginScreenState } = useLoginScreen();
+
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-[#235390] text-white md:flex-row md:gap-36" style={{ backgroundImage: `url(${_bgsnow})` }}>
             <GlobeSvg className='h-fit w-7/12 md:w-[360px]' />
@@ -19,13 +23,18 @@ const HomeScreen = () => {
                     </Link>
                     <button
                         className="w-full rounded-2xl border-2 border-b-4 border-[#042c60] bg-[#235390] px-8 py-3 font-bold uppercase transition hover:bg-[#204b82] md:min-w-[320px]"
-                    // onClick={() => setLoginScreenState("LOGIN")}
+                        onClick={() => setLoginScreenState("LOGIN")}
                     >
                         I already have an account
                     </button>
                 </div>
             </div>
+            <LoginScreen
+                loginScreenState={loginScreenState}
+                setLoginScreenState={setLoginScreenState}
+            />
         </div>
+
     )
 }
 export default HomeScreen

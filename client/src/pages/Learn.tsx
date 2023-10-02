@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState, useContext } from "react";
 import {
   ActiveBookSvg,
   LockedBookSvg,
@@ -10,7 +10,6 @@ import {
   GoldenDumbbellSvg,
   GoldenTreasureSvg,
   GoldenTrophySvg,
-  GuidebookSvg,
   LessonCompletionSvg0,
   LessonCompletionSvg1,
   LessonCompletionSvg2,
@@ -25,17 +24,34 @@ import {
   ActiveDumbbellSvg,
   PracticeExerciseSvg,
 } from "../components/Svgs";
-// import { TopBar } from "../components/TopBar";
-// import { BottomBar } from "../components/BottomBar";
-// import { RightBar } from "../components/RightBar";
-// import { LeftBar } from "../components/LeftBar";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { TopBar } from "../components/TopBar";
+import { BottomBar } from "../components/BottomBar";
+import { RightBar } from "../components/RightBar";
+import { LeftBar } from "../components/LeftBar";
 import { LoginScreen, useLoginScreen } from "../components/LoginScreen";
-// import type { Tile, TileType, Unit } from "~/utils/units";
-// import { units } from "~/utils/units";
+import type { Tile, TileType, Unit } from "../utils/units";
+import { Store } from "../redux/Share_store";
+import { toast } from 'react-toastify'
+
 
 type TileStatus = "LOCKED" | "ACTIVE" | "COMPLETE";
 
+const [ units, setUnits] = useState<Unit[]>([])
+
+export const fetchUnits = () => {
+  axios.get("http://localhost:5000/lessons/units")
+    .then((response) => {
+      setUnits(response.data);
+    })
+    .catch((error) => {
+      console.error("Error fetching units:", error);
+    });
+};
+
 const tileStatus = (tile: Tile, lessonsCompleted: number): TileStatus => {
+  fetchUnits()
   const lessonsPerTile = 4;
   const tilesCompleted = Math.floor(lessonsCompleted / lessonsPerTile);
   const tiles = units.flatMap((unit) => unit.tiles);
@@ -164,9 +180,9 @@ const getTileTooltipLeftOffset = ({
     unitNumber % 2 === 1
       ? tileTooltipLeftOffsets
       : [
-          ...tileTooltipLeftOffsets.slice(4),
-          ...tileTooltipLeftOffsets.slice(0, 4),
-        ];
+        ...tileTooltipLeftOffsets.slice(4),
+        ...tileTooltipLeftOffsets.slice(0, 4),
+      ];
 
   return offsets[index % offsets.length] ?? tileTooltipLeftOffsets[0];
 };
@@ -242,8 +258,8 @@ const TileTooltip = ({
           status === "ACTIVE"
             ? activeBackgroundColor
             : status === "LOCKED"
-            ? "border-2 border-gray-200 bg-gray-100"
-            : "bg-yellow-400",
+              ? "border-2 border-gray-200 bg-gray-100"
+              : "bg-yellow-400",
           index === selectedTile ? "top-4 scale-100" : "-top-14 scale-0",
         ].join(" ")}
         style={{ left: "calc(50% - 150px)" }}
@@ -254,8 +270,8 @@ const TileTooltip = ({
             status === "ACTIVE"
               ? activeBackgroundColor
               : status === "LOCKED"
-              ? "border-l-2 border-t-2 border-gray-200 bg-gray-100"
-              : "bg-yellow-400",
+                ? "border-l-2 border-t-2 border-gray-200 bg-gray-100"
+                : "bg-yellow-400",
           ].join(" ")}
           style={{
             left: getTileTooltipLeftOffset({ index, unitNumber, tilesLength }),
@@ -267,15 +283,15 @@ const TileTooltip = ({
             status === "ACTIVE"
               ? "text-white"
               : status === "LOCKED"
-              ? "text-gray-400"
-              : "text-yellow-600",
+                ? "text-gray-400"
+                : "text-yellow-600",
           ].join(" ")}
         >
           {description}
         </div>
         {status === "ACTIVE" ? (
           <Link
-            href="/lesson"
+            to="/lesson"
             className={[
               "flex w-full items-center justify-center rounded-xl border-b-4 border-gray-200 bg-white p-3 uppercase",
               activeTextColor,
@@ -292,7 +308,7 @@ const TileTooltip = ({
           </button>
         ) : (
           <Link
-            href="/lesson"
+            to="/lesson"
             className="flex w-full items-center justify-center rounded-xl border-b-4 border-yellow-200 bg-white p-3 uppercase text-yellow-400"
           >
             Practice +5 XP
@@ -303,8 +319,36 @@ const TileTooltip = ({
   );
 };
 
+export const increaseLessonsCompleted = (userId: number, by: number) => async (dispatch: any) => {
+  try {
+    // Sending a request to the backend to increase lessonsCompleted for the user.
+    const { data } = await axios.post(`http://localhost:5000/${userId}/increaseLessonsCompleted`, by);
+    
+    // Dispatching the updated data to the Redux store.
+    dispatch({ type: 'INCREASE_LESSONS_COMPLETED', payload: data.lessonsCompleted });
+  } catch (error) {
+    // Handle errors if any.
+    console.error('Error increasing lessonsCompleted:', error);
+  }
+};
+
+export const increaseLingots = (userId: number, by: number) => async (dispatch: any) => {
+  try {
+    // Sending a request to the backend to increase lingots for the user.
+    
+    const { data } = await axios.post(`http://localhost:5000/users/${userId}/increaseLingots`, by);
+    
+    // Dispatching the updated data to the Redux store.
+    dispatch({ type: 'INCREASE_LINGOTS', payload: data.lingots });
+  } catch (error) {
+    // Handling errors if any.
+    console.error('Error increasing lingots:', error);
+  }
+};
+
 const UnitSection = ({ unit }: { unit: Unit }): JSX.Element => {
-  const router = useRouter();
+  const navigate = useNavigate()
+  const { state } = useContext(Store)
 
   const [selectedTile, setSelectedTile] = useState<null | number>(null);
 
@@ -316,11 +360,9 @@ const UnitSection = ({ unit }: { unit: Unit }): JSX.Element => {
 
   const closeTooltip = useCallback(() => setSelectedTile(null), []);
 
-  const lessonsCompleted = useBoundStore((x) => x.lessonsCompleted);
-  const increaseLessonsCompleted = useBoundStore(
-    (x) => x.increaseLessonsCompleted
-  );
-  const increaseLingots = useBoundStore((x) => x.increaseLingots);
+  const lessonsCompleted = state.lessonSlice.lessonsCompleted
+
+  const userData: Record<string, any> | null = JSON.parse(localStorage.getItem('userData') || 'null');
 
   return (
     <>
@@ -389,7 +431,7 @@ const UnitSection = ({ unit }: { unit: Unit }): JSX.Element => {
                               tile.type === "fast-forward" &&
                               status === "LOCKED"
                             ) {
-                              void router.push(
+                              navigate(
                                 `/lesson?fast-forward=${unit.unitNumber}`
                               );
                               return;
@@ -414,9 +456,12 @@ const UnitSection = ({ unit }: { unit: Unit }): JSX.Element => {
                           }),
                         ].join(" ")}
                         onClick={() => {
-                          if (status === "ACTIVE") {
-                            increaseLessonsCompleted(4);
-                            increaseLingots(1);
+                          if (status === "ACTIVE" && userData) {
+                            increaseLessonsCompleted(userData?._id, 4);
+                            increaseLingots(userData?._id, 4);
+                            toast.success('Keep it up!')
+                          } else {
+                            toast.error('progress not recorded')
                           }
                         }}
                         role="button"
@@ -484,7 +529,7 @@ const getTopBarColors = (
   }
 };
 
-const Learn: NextPage = () => {
+const Learn = () => {
   const { loginScreenState, setLoginScreenState } = useLoginScreen();
 
   const [scrollY, setScrollY] = useState(0);
@@ -512,7 +557,7 @@ const Learn: NextPage = () => {
           ))}
           <div className="sticky bottom-28 left-0 right-0 flex items-end justify-between">
             <Link
-              href="/lesson?practice"
+              to="/lesson?practice"
               className="absolute left-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-b-4 border-gray-200 bg-white transition hover:bg-gray-50 hover:brightness-90 md:left-0"
             >
               <span className="sr-only">Practice exercise</span>
@@ -606,15 +651,13 @@ const HoverLabel = ({
 const UnitHeader = ({
   unitNumber,
   description,
-  backgroundColor,
-  borderColor,
+  backgroundColor
 }: {
   unitNumber: number;
   description: string;
   backgroundColor: `bg-${string}`;
   borderColor: `border-${string}`;
 }) => {
-  const language = useBoundStore((x) => x.language);
   return (
     <article
       className={["max-w-2xl text-white sm:rounded-xl", backgroundColor].join(
@@ -626,18 +669,6 @@ const UnitHeader = ({
           <h2 className="text-2xl font-bold">Unit {unitNumber}</h2>
           <p className="text-lg">{description}</p>
         </div>
-        <Link
-          href={`https://duolingo.com/guidebook/${language.code}/${unitNumber}`}
-          className={[
-            "flex items-center gap-3 rounded-2xl border-2 border-b-4 p-3 transition hover:text-gray-100",
-            borderColor,
-          ].join(" ")}
-        >
-          <GuidebookSvg />
-          <span className="sr-only font-bold uppercase lg:not-sr-only">
-            Guidebook
-          </span>
-        </Link>
       </header>
     </article>
   );

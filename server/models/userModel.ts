@@ -4,7 +4,7 @@ import mongoose, { Document } from 'mongoose';
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, required: true }, 
   photo: { type: String, default: '' }, 
   isAdmin: { type: Boolean, default: false }, 
   token: { type: String, default: '' }, 
@@ -13,7 +13,6 @@ const userSchema = new mongoose.Schema({
   language: { type: String, default: '' },
   lessonsCompleted: { type: Number, default: 0 },
   lingots: { type: Number, default: 0 },
-  isLoading: { type: Boolean, default: false },
   soundEffects: { type: Boolean, default: true },
   speakingExercises: { type: Boolean, default: true },
   listeningExercises: { type: Boolean, default: true },
