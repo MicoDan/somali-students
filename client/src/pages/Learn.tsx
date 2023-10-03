@@ -40,8 +40,8 @@ type TileStatus = "LOCKED" | "ACTIVE" | "COMPLETE";
 
 const [ units, setUnits] = useState<Unit[]>([])
 
-export const fetchUnits = () => {
-  axios.get("http://localhost:5000/lessons/units")
+export const fetchUnits = async() => {
+  await axios.get("http://localhost:5000/lessons/units")
     .then((response) => {
       setUnits(response.data);
     })

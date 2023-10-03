@@ -1,4 +1,4 @@
-import React, { useRef, useState, useContext } from "react";
+import React, { useContext, useRef, useState } from "react";
 import {
     AppleSvg,
     BigCloseSvg,
@@ -15,6 +15,8 @@ import {
 import womanPng from "../../public/woman.png";
 import { Link } from "react-router-dom";
 import { Store } from "../redux/Share_store";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const lessonProblem1 = {
     type: "SELECT_1_OF_3",
@@ -659,17 +661,53 @@ const LessonComplete = ({
     questionResults: QuestionResult[];
 }) => {
 
+    const increaseLessonsCompleted = (userId: number, by: number) => async (dispatch: any) => {
+        try {
+            // Sending a request to the backend to increase lessonsCompleted for the user.
+            const { data } = await axios.post(`http://localhost:5000/${userId}/increaseLessonsCompleted`, by);
+
+            // Dispatching the updated data to the Redux store.
+            dispatch({ type: 'INCREASE_LESSONS_COMPLETED', payload: data.lessonsCompleted });
+        } catch (error) {
+            // Handle errors if any.
+            console.error('Error increasing lessonsCompleted:', error);
+        }
+    };
+    const increaseXp = (userId: number, by: number) => async (dispatch: any) => {
+        try {
+            // Sending a request to the backend to increase lessonsCompleted for the user.
+            const { data } = await axios.post(`http://localhost:5000/${userId}/increaseXp`, by);
+
+            // Dispatching the updated data to the Redux store.
+            dispatch({ type: 'SET_GOAL_XP', payload: data.goalXp });
+        } catch (error) {
+            // Handle errors if any.
+            console.error('Error increasing lessonsCompleted:', error);
+        }
+    };
+    const increaseLingots = (userId: number, by: number) => async (dispatch: any) => {
+        try {
+            // Sending a request to the backend to increase lessonsCompleted for the user.
+            const { data } = await axios.post(`http://localhost:5000/${userId}/increaseLingots`, by);
+
+            // Dispatching the updated data to the Redux store.
+            dispatch({ type: 'INCREASE_LINGOTS', payload: data.lingots });
+        } catch (error) {
+            // Handle errors if any.
+            console.error('Error increasing lessonsCompleted:', error);
+        }
+    };
+
+    const userData: Record<string, any> | null = JSON.parse(localStorage.getItem('userData') || 'null');
+
     const currentURL = window.location.href;
     const url = new URL(currentURL);
     const isPractice = url.searchParams.has("practice");
-    const { state } = useContext(Store)
+    const { dispatch } = useContext(Store)
 
-    const increaseXp = useBoundStore((x) => x.increaseXp);
-    const addToday = useBoundStore((x) => x.addToday);
-    const increaseLingots = useBoundStore((x) => x.increaseLingots);
-    const increaseLessonsCompleted = useBoundStore(
-        (x) => x.increaseLessonsCompleted
-    );
+    const addToday = () => {
+        dispatch({ type: "ADD_TODAY" });
+    }
     return (
         <div className="flex min-h-screen flex-col gap-5 px-4 py-5 sm:px-0 sm:py-0">
             <div className="flex grow flex-col items-center justify-center gap-8 font-bold">
@@ -716,11 +754,11 @@ const LessonComplete = ({
                         }
                         to="learn"
                         onClick={() => {
-                            increaseXp(correctAnswerCount);
+                            increaseXp(userData?._id, correctAnswerCount);
                             addToday();
-                            increaseLingots(isPractice ? 0 : 1);
+                            increaseLingots(userData?._id, isPractice ? 0 : 1);
                             if (!isPractice) {
-                                increaseLessonsCompleted();
+                                increaseLessonsCompleted(userData?._id, 1);
                             }
                         }}
                     >
@@ -937,7 +975,28 @@ const LessonFastForwardEndPass = ({
     setReviewLessonShown: React.Dispatch<React.SetStateAction<boolean>>;
     questionResults: QuestionResult[];
 }) => {
-    const jumpToUnit = useBoundStore((x) => x.jumpToUnit);
+    const userData: Record<string, any> | null = JSON.parse(localStorage.getItem('userData') || 'null');
+    const { dispatch } = useContext(Store)
+
+    const jumpToUnit = async (userId: string, unitNumber: number) => {
+        const { data } = await axios.get("http://localhost:5000/lessons/units")
+        const units = data
+        try {
+            const answer = await axios.put(`http://localhost:5000/users/update-lessons-completed/${userId}`, {
+                unitNumber,
+                units,
+            });
+
+            dispatch({ type: 'INCREASE_LESSONS_COMPLETED', action: answer.data.lessonsCompleted })
+
+            toast.success("LessonsCompleted updated successfully");
+
+        } catch (error) {
+            toast.error("Failed to update the lessons completed")
+            console.error(error);
+            // Handle any errors here
+        }
+    };
     return (
         <div className="flex min-h-screen flex-col px-5 py-8 text-center">
             <div className="flex grow flex-col items-center justify-center gap-5">
@@ -958,7 +1017,7 @@ const LessonFastForwardEndPass = ({
                     <Link
                         className="flex w-full items-center justify-center rounded-2xl border-b-4 border-green-600 bg-green-500 p-3 font-bold uppercase text-white transition hover:brightness-105 sm:min-w-[150px] sm:max-w-fit"
                         to="/learn"
-                        onClick={() => jumpToUnit(unitNumber)}
+                        onClick={() => jumpToUnit(userData?._id, unitNumber)}
                     >
                         Continue
                     </Link>

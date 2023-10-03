@@ -1,4 +1,4 @@
-import User from "../models/userModel.js";
+import User, { userDocument } from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import expressAsyncHandler from "express-async-handler";
 import { generateToken, isAuth } from "../utils.js";
@@ -7,6 +7,7 @@ import multer from "multer";
 import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
 import { Request, Response } from 'express'
+import { IUnit } from "../models/UnitModel.js";
 
 const upload = multer();
 
@@ -183,5 +184,53 @@ userRouter.post('/:userId/increaseLingots', async (req, res) => {
     res.status(500).json({ error: 'Failed to increase lingots' });
   }
 })
+
+userRouter.post('/:userId/increaseXp', async (req, res) => {
+  const { userId } = req.params;
+  const  by  = req.body
+
+  try {
+    // Find the user by ID and update lingots.
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $inc: { goalXp: by } },
+      { new: true, select: 'lingots' } // Select only lingots field
+    );
+
+    res.status(200).json({ goalXp: updatedUser?.goalXp });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to increase lingots' });
+  }
+})
+userRouter.put('/update-lessons-completed/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const { unitNumber, units } = req.body
+
+  try {
+    // Find the user by userId
+    const user: userDocument | null = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+ 
+    const totalLessonsToJumpToUnit: number = units
+      .filter((unit: IUnit) => unit.unitNumber < parseInt(unitNumber))
+      .map((unit:IUnit) => unit.tiles.length)
+      .reduce((a: number, b: number) => a + b, 0);
+
+    user.lessonsCompleted = Math.max(user.lessonsCompleted, totalLessonsToJumpToUnit);
+
+    await user.save();
+
+    const lessonsCompleted = user.lessonsCompleted
+
+    return res.status(200).json(lessonsCompleted);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 export default userRouter;

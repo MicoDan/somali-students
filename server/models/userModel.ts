@@ -42,6 +42,27 @@ interface UserModel extends Document {
   xpByDate: Record<string, number>;
 }
 
+export type userDocument =  Document & {
+  username: string;
+  email: string;
+  password: string;
+  photo: string;
+  isAdmin: boolean;
+  token: string;
+  loggedIn: boolean;
+  goalXp: number;
+  language: string;
+  lessonsCompleted: number;
+  lingots: number;
+  isLoading: boolean;
+  soundEffects: boolean;
+  speakingExercises: boolean;
+  listeningExercises: boolean;
+  activeDays: string[];
+  streak: number;
+  xpByDate: Record<string, number>;
+}
+
 const User = mongoose.model<UserModel>('User', userSchema);
 
 export default User;

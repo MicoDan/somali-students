@@ -1,6 +1,7 @@
 import { GoalXpState, LanguageState, LessonState, LingotState, LoaderState, SoundSettingsState, StreakState, UserState, XpState } from "./Interface";
 import { initialGoalXpState, initialLanguageState, initialLessonState, initialLingotState, initialLoaderState, initialSoundSettingsState, initialStreakState, initialUserState, initialXpState } from "./Initial";
 import { RootAction } from "./RootAction";
+import dayjs from "dayjs";
 
 export const goalXpSliceReducer = (state: GoalXpState = initialGoalXpState, action: RootAction): GoalXpState => {
     switch (action.type) {
@@ -37,7 +38,6 @@ export const lingotSliceReducer = (state: LingotState = initialLingotState, acti
             return { ...state, lingots: action.payload }
         default:
             return state;
-
     }
 }
 
@@ -65,14 +65,22 @@ export const soundSettingsSliceReducer = (state: SoundSettingsState = initialSou
 
 export const streakSliceReducer = (state: StreakState = initialStreakState, action: RootAction): StreakState => {
     switch (action.type) {
-        case 'ADD_TODAY':
-            const newActiveDays = new Set(state.activeDays);
-            // newActiveDays.add(/* Logic to get today's date as a string */);
-            // // You can implement logic to update the streak based on activeDays as needed
-            return { ...state, activeDays: newActiveDays };
+        case "ADD_TODAY":
+          const newActiveDays = new Set(state.activeDays);
+          const todayDateString = dayjs().format("YYYY-MM-DD"); // Get today's date as a string
+          newActiveDays.add(todayDateString);
+    
+          // Calculate the streak based on activeDays
+          let streak = state.streak;
+          let currentDate = dayjs();
+          while (newActiveDays.has(currentDate.format("YYYY-MM-DD"))) {
+            streak++;
+            currentDate = currentDate.subtract(1, "day");
+          }
+          return { ...state, activeDays: newActiveDays, streak };
         default:
-            return state;
-    }
+          return state;
+      }
 };
 
 export const userSliceReducer = (state: UserState = initialUserState, action: RootAction): UserState => {

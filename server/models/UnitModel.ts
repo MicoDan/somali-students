@@ -13,7 +13,7 @@ const unitSchema = new Schema({
   tiles: [tileSchema],
 });
 
-interface IUnit extends Document {
+export interface IUnit extends Document {
   unitNumber: number;
   description: string;
   backgroundColor: string;
