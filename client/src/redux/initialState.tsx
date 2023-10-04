@@ -14,7 +14,7 @@ import {
 const userData: Record<string, any> | null = JSON.parse(localStorage.getItem('userData') || 'null');
 
 
-const initialState = {
+export const initialState = {
   goalXpSlice: {
     goalXp: userData ? userData.xp : '',
   } as GoalXpState,
@@ -50,7 +50,7 @@ const initialState = {
   } as UserState,
   xpSlice: {
     xpByDate: userData ? userData.xpByDate : '',
+    xpToday: userData ? userData.xpToday : '',
+    xpThisWeek: userData ? userData.xpThisWeek : '',
   } as XpState,
 };
-
-export { initialState };

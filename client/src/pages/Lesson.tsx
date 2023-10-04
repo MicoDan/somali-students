@@ -676,12 +676,12 @@ const LessonComplete = ({
     const increaseXp = (userId: number, by: number) => async (dispatch: any) => {
         try {
             // Sending a request to the backend to increase lessonsCompleted for the user.
-            const { data } = await axios.post(`http://localhost:5000/${userId}/increaseXp`, by);
+            const { data } = await axios.post(`http://localhost:5000/users/add-xp/${userId}`, { xp: by });
 
             // Dispatching the updated data to the Redux store.
-            dispatch({ type: 'SET_GOAL_XP', payload: data.goalXp });
+            dispatch({ type: 'SET_XP_BY_DATE', payload: data.newXpDate });
         } catch (error) {
-            // Handle errors if any.
+            // Handling errors if any.
             console.error('Error increasing lessonsCompleted:', error);
         }
     };

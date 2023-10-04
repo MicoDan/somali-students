@@ -8,10 +8,23 @@ import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
 import { Request, Response } from 'express'
 import { IUnit } from "../models/UnitModel.js";
+import { addXpToday, xpAt } from "../utils/xp.js";
+import dayjs from "dayjs";
+import { range, sum } from "../utils/array-utils.js";
 
 const upload = multer();
 
 const userRouter = express.Router();
+
+userRouter.get(
+  '/all',
+  isAuth,
+  expressAsyncHandler(async (req: Request, res: Response) => {
+    const users = await User.find({});
+    res.send(users);
+  })
+);
+
 
 userRouter.post(
   "/signup",
@@ -47,6 +60,9 @@ userRouter.post(
       activeDays: user.activeDays,
       streak: user.streak,
       xpByDate: user.xpByDate,
+      xpToday: user.xpToday,
+      xpThisWeek: user.xpThisWeek,
+      isCurrentUser: user.isCurrentUser
     });
   })
 );
@@ -79,6 +95,9 @@ userRouter.post(
         activeDays: user.activeDays,
         streak: user.streak,
         xpByDate: user.xpByDate,
+        xpToday: user.xpToday,
+        xpThisWeek: user.xpThisWeek,
+        isCurrentUser: user.isCurrentUser
       });
       return;
     }
@@ -142,6 +161,9 @@ userRouter.put(
             activeDays: user.activeDays,
             streak: user.streak,
             xpByDate: user.xpByDate,
+            xpToday: user.xpToday,
+            xpThisWeek: user.xpThisWeek,
+            isCurrentUser: user.isCurrentUser
         })
       } else {
         res.status(404).send('user not found')
@@ -232,5 +254,74 @@ userRouter.put('/update-lessons-completed/:userId', async (req, res) => {
   }
 });
 
+userRouter.post('/add-xp/:userId', async (req, res) => {
+  const { userId } = req.params
+  const { xp } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Calculate XP for today and update the user's document
+    const updatedXpByDate = addXpToday(user.xpByDate, xp);
+    user.xpByDate = updatedXpByDate;
+
+    await user.save();
+    const newXpDate = user.xpByDate
+
+    res.status(200).json({ newXpDate });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Route to get XP earned today
+userRouter.get('/xp-today/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const xpToday = xpAt(user.xpByDate, dayjs());
+    
+    res.status(200).json({ xpToday });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Route to get XP earned this week
+userRouter.get('/xp-this-week/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const today = dayjs();
+    const xpThisWeek = sum(
+      range(0, today.day() + 1).map((daysBack: number) =>
+        xpAt(user.xpByDate, today.add(-daysBack, 'day'))
+      )
+    );
+
+    res.status(200).json({ xpThisWeek });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 export default userRouter;

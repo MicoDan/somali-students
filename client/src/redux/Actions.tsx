@@ -56,8 +56,16 @@ export interface LogOutAction {
     type: 'LOG_OUT';
 }
 
-export interface IncreaseXpAction {
-    type: 'INCREASE_XP';
+export interface SetXpDateAction {
+    type: 'SET_XP_BY_DATE';
+    payload: Record<string, number>;
+}
+export interface SetXpTodayAction {
+    type: 'SET_XP_TODAY';
+    payload: number;
+}
+export interface SetXpThisWeekAction {
+    type: 'SET_XP_THIS_WEEK';
     payload: number;
 }
 

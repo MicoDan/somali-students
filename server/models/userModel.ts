@@ -19,6 +19,9 @@ const userSchema = new mongoose.Schema({
   activeDays: { type: [String], default: [] }, 
   streak: { type: Number, default: 0 },
   xpByDate: { type: Object, default: {} },
+  xpToday: {type: Number, default: 0},
+  xpThisWeek: {type: Number, default: 0},
+  isCurrentUser: {type: Boolean, default: false}
 });
 
 interface UserModel extends Document {
@@ -40,6 +43,9 @@ interface UserModel extends Document {
   activeDays: string[];
   streak: number;
   xpByDate: Record<string, number>;
+  xpToday: number;
+  xpThisWeek: number;
+  isCurrentUser: boolean;
 }
 
 export type userDocument =  Document & {
@@ -61,6 +67,9 @@ export type userDocument =  Document & {
   activeDays: string[];
   streak: number;
   xpByDate: Record<string, number>;
+  xpToday: number;
+  xpThisWeek: number;
+  isCurrentUser: boolean
 }
 
 const User = mongoose.model<UserModel>('User', userSchema);

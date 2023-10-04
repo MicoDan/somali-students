@@ -1,6 +1,14 @@
+import { DateString } from "../utils/dateString";
+
 // Define TypeScript types for state slices
 export interface GoalXpState {
     goalXp: number;
+}
+
+export interface xpState{
+    xpByDate: Record<DateString, number>;
+    xpToday: number;
+    xpThisWeek: number;
 }
 
 export interface LanguageState {
@@ -42,4 +50,6 @@ export interface UserState {
 
 export interface XpState {
     xpByDate: Record<string, number>;
+    xpToday: number;
+    xpThisWeek: number;
 }

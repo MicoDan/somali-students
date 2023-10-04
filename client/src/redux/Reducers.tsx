@@ -1,9 +1,9 @@
 import { GoalXpState, LanguageState, LessonState, LingotState, LoaderState, SoundSettingsState, StreakState, UserState, XpState } from "./Interface";
-import { initialGoalXpState, initialLanguageState, initialLessonState, initialLingotState, initialLoaderState, initialSoundSettingsState, initialStreakState, initialUserState, initialXpState } from "./Initial";
+import { initialState } from "./initialState";
 import { RootAction } from "./RootAction";
 import dayjs from "dayjs";
 
-export const goalXpSliceReducer = (state: GoalXpState = initialGoalXpState, action: RootAction): GoalXpState => {
+export const goalXpSliceReducer = (state: GoalXpState = initialState.goalXpSlice, action: RootAction): GoalXpState => {
     switch (action.type) {
         case 'SET_GOAL_XP':
             return { ...state, goalXp: action.payload };
@@ -12,7 +12,7 @@ export const goalXpSliceReducer = (state: GoalXpState = initialGoalXpState, acti
     }
 };
 
-export const languageSliceReducer = (state: LanguageState = initialLanguageState, action: RootAction): LanguageState => {
+export const languageSliceReducer = (state: LanguageState = initialState.languageSlice, action: RootAction): LanguageState => {
     switch (action.type) {
         case 'SET_LANGUAGE':
             return { ...state, language: action.payload };
@@ -21,7 +21,7 @@ export const languageSliceReducer = (state: LanguageState = initialLanguageState
     }
 }
 
-export const lessonSliceReducer = (state: LessonState = initialLessonState, action: RootAction): LessonState => {
+export const lessonSliceReducer = (state: LessonState = initialState.lessonSlice, action: RootAction): LessonState => {
     switch (action.type) {
         case 'INCREASE_LESSONS_COMPLETED':
             return { ...state, lessonsCompleted: action.payload }
@@ -30,7 +30,7 @@ export const lessonSliceReducer = (state: LessonState = initialLessonState, acti
     }
 }
 
-export const lingotSliceReducer = (state: LingotState = initialLingotState, action: RootAction): LingotState => {
+export const lingotSliceReducer = (state: LingotState = initialState.lingotSlice, action: RootAction): LingotState => {
     switch (action.type) {
         case 'INCREASE_LINGOTS':
             return { ...state, lingots: action.payload }
@@ -41,7 +41,7 @@ export const lingotSliceReducer = (state: LingotState = initialLingotState, acti
     }
 }
 
-export const loaderSliceReducer = (state: LoaderState = initialLoaderState, action: RootAction): LoaderState => {
+export const loaderSliceReducer = (state: LoaderState = initialState.loaderSlice, action: RootAction): LoaderState => {
     switch (action.type) {
         case 'SET_LOADING':
             return { ...state, isLoading: action.payload }
@@ -50,7 +50,7 @@ export const loaderSliceReducer = (state: LoaderState = initialLoaderState, acti
     }
 }
 
-export const soundSettingsSliceReducer = (state: SoundSettingsState = initialSoundSettingsState, action: RootAction): SoundSettingsState => {
+export const soundSettingsSliceReducer = (state: SoundSettingsState = initialState.soundSlice, action: RootAction): SoundSettingsState => {
     switch (action.type) {
         case 'SET_SOUND_EFFECTS':
             return { ...state, soundEffects: action.payload };
@@ -63,7 +63,7 @@ export const soundSettingsSliceReducer = (state: SoundSettingsState = initialSou
     }
 };
 
-export const streakSliceReducer = (state: StreakState = initialStreakState, action: RootAction): StreakState => {
+export const streakSliceReducer = (state: StreakState = initialState.streakSlice, action: RootAction): StreakState => {
     switch (action.type) {
         case "ADD_TODAY":
           const newActiveDays = new Set(state.activeDays);
@@ -83,24 +83,27 @@ export const streakSliceReducer = (state: StreakState = initialStreakState, acti
       }
 };
 
-export const userSliceReducer = (state: UserState = initialUserState, action: RootAction): UserState => {
+export const userSliceReducer = (state: UserState = initialState.userSlice, action: RootAction): UserState => {
     switch (action.type) {  
         case 'LOG_IN':
             // Implement logic to update user state when logging in
             return { ...state, loggedIn: true };
         case 'LOG_OUT':
             // Implement logic to reset user state when logging out
-            return { ...initialUserState };
+            return { ...initialState.userSlice };
         default:
             return state;
     }
 }
     
-export const xpSliceReducer = (state: XpState = initialXpState, action: RootAction): XpState => {
+export const xpSliceReducer = (state: XpState = initialState.xpSlice, action: RootAction): XpState => {
     switch (action.type) {
-      case 'INCREASE_XP':
-        // Implement logic to update xpByDate based on the action payload
-        return { ...state };
+      case 'SET_XP_BY_DATE':
+        return {...state, xpByDate: action.payload}
+      case 'SET_XP_TODAY':
+        return {...state, xpToday: action.payload}
+      case 'SET_XP_THIS_WEEK':
+        return {...state, xpThisWeek: action.payload}
       default:
         return state;
     }

@@ -1,4 +1,4 @@
-import { SetGoalXpAction, SetLanguageAction, IncreaseLessonsCompletedAction, IncreaseLingotsAction, SpendLingotsAction, SetLoadingAction, SetSoundEffectsAction, SetSpeakingExercisesAction, SetListeningExercisesAction, AddTodayAction, LogInAction, LogOutAction, IncreaseXpAction } from "./Actions";
+import { SetGoalXpAction, SetLanguageAction, IncreaseLessonsCompletedAction, IncreaseLingotsAction, SpendLingotsAction, SetLoadingAction, SetSoundEffectsAction, SetSpeakingExercisesAction, SetListeningExercisesAction, AddTodayAction, LogInAction, LogOutAction, SetXpDateAction, SetXpTodayAction, SetXpThisWeekAction } from "./Actions";
 
 export type RootAction =
   | SetGoalXpAction
@@ -13,4 +13,6 @@ export type RootAction =
   | AddTodayAction
   | LogInAction
   | LogOutAction
-  | IncreaseXpAction;
+  | SetXpDateAction
+  | SetXpTodayAction
+  | SetXpThisWeekAction
