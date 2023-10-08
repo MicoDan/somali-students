@@ -1,28 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
-const userData: Record<string, any> | null = JSON.parse(
-  localStorage.getItem("userData") || "null"
-);
-const [users, setUsers] = useState<any[]>([]);
+export const useUserData = () => {
+  const userData: Record<string, any> | null = JSON.parse(
+    localStorage.getItem("userData") || "null"
+  );
 
-export const fetchAllUsers = async () => {
-  try {
-    const response = await axios.get("http://localhost:5000/users/all");
-    setUsers(response.data);
+  return userData;
+};
 
-    const updatedUsers = users.map((user) => ({
-      ...user,
-      isCurrentUser: user._id === userData?._id,
-    }));
+export const useUsers = () => {
+  const [users, setUsers] = useState<any[]>([]);
 
-    setUsers(updatedUsers);
-  } catch (error) {
-    console.error(error);
-  }
+  useEffect(() => {
+    const userData = useUserData()
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/users/all");
+        const updatedUsers = response.data.map((user: any) => ({
+          ...user,
+          isCurrentUser: user._id === userData?._id,
+        }));
+        setUsers(updatedUsers);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return users;
 };
 
 export const useLeaderboardUsers = () => {
+  const users = useUsers();
   return users.sort((a, b) => b.xp - a.xp);
 };
 

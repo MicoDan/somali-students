@@ -11,23 +11,15 @@ import {
   LingotsTreasureChestSvg,
   TreasureProgressSvg,
 } from "./Svgs";
-// import { Calendar } from "./Calendar";
-// import { useBoundStore } from "~/hooks/useBoundStore";
-// import { Flag } from "./Flag";
+import { Calendar } from "./Calendar";
+import { Flag } from "./Flag";
 import type { LoginScreenState } from "./LoginScreen";
 import { LoginScreen } from "./LoginScreen";
 import { Store } from "../redux/Share_store";
 import { Link } from "react-router-dom";
-import { Calendar } from "./Calendar";
-// import { useLeaderboardRank } from "~/hooks/useLeaderboard";
+import { useLeaderboardRank } from "../redux/useLeaderboards";
 
 export const RightBar = () => {
-  const { state } = useContext(Store)
-  const loggedIn = state.userSlice.loggedIn;
-  const lingots = state.lingotSlice.lingots;
-  const streak = state.streakSlice.streak;
-  const lessonsCompleted = state.lessonSlice.lessonsCompleted;
-
   const [languagesShown, setLanguagesShown] = useState(false);
 
   const [streakShown, setStreakShown] = useState(false);
@@ -37,6 +29,11 @@ export const RightBar = () => {
 
   const [loginScreenState, setLoginScreenState] =
     useState<LoginScreenState>("HIDDEN");
+  const { state } = useContext(Store)
+  const loggedIn = state.userSlice.loggedIn;
+  const lingots = state.lingotSlice.lingots;
+  const streak = state.streakSlice.streak;
+  const lessonsCompleted = state.lessonSlice.lessonsCompleted;
 
   return (
     <>
@@ -50,7 +47,7 @@ export const RightBar = () => {
             role="button"
             tabIndex={0}
           >
-            {/* <Flag language={language} width={45} /> */}
+             <Flag /> 
             <div>Somali</div>
             <div
               className="absolute top-full z-10 rounded-2xl border-2 border-gray-300 bg-white"
@@ -64,7 +61,7 @@ export const RightBar = () => {
                 My courses
               </h2>
               <button className="flex w-full items-center gap-3 border-t-2 border-gray-300 bg-blue-100 px-5 py-3 text-left font-bold">
-                {/* <Flag language={language} width={45} /> */}
+                 <Flag /> 
                 <span className="text-blue-500">Somali</span>
               </button>
               <Link
@@ -194,8 +191,9 @@ const UnlockLeaderboardsSection = () => {
 };
 
 const LeaderboardRankSection = () => {
-  // const xpThisWeek = state.xpSlice.xpByDate;
-  // const rank = useLeaderboardRank();
+  const { state } = useContext(Store)
+   const xpThisWeek = state.xpSlice.xpThisWeek;
+   const rank = useLeaderboardRank();
   const leaderboardLeague = "Bronze League";
   return (
     <article className="flex flex-col gap-5 rounded-2xl border-2 border-gray-200 p-6 text-gray-700">
@@ -208,14 +206,14 @@ const LeaderboardRankSection = () => {
       <div className="flex gap-6">
         <BronzeLeagueSvg />
         <div className="flex flex-col gap-5">
-          {/* {rank !== null && (
+          {rank !== null && (
             <p className="text-lg font-bold text-gray-700">
               {`You're ranked #${rank}`}
             </p>
-          )} */}
-          {/* <p className="text-sm leading-6 text-gray-500">
+          )} =
+           <p className="text-sm leading-6 text-gray-500">
             You earned {xpThisWeek} XP this week so far
-          </p> */}
+          </p> 
         </div>
       </div>
     </article>
@@ -223,18 +221,19 @@ const LeaderboardRankSection = () => {
 };
 
 const DailyQuestsSection = () => {
-  // const xpToday = useBoundStore((x) => x.xpToday());
-  // const goalXp = useBoundStore((x) => x.goalXp);
+   const { state } = useContext(Store)
+   const xpToday = state.xpSlice.xpToday;
+   const goalXp = state.goalXpSlice.goalXp;
   return (
     <article className="flex flex-col gap-5 rounded-2xl border-2 border-gray-200 p-6 font-bold text-gray-700">
       <h2 className="text-xl">Daily Quests</h2>
       <div className="flex items-center gap-4">
         <LightningProgressSvg />
         <div className="flex flex-col gap-2">
-          {/* <h3>Earn {goalXp} XP</h3> */}
+           <h3>Earn {goalXp} XP</h3> 
           <div className="flex items-center">
             <div className="relative h-5 w-52 rounded-l-full bg-gray-200">
-              {/* <div
+               <div
                 className={[
                   "relative h-full rounded-l-full bg-yellow-400",
                   xpToday === 0 ? "" : "px-2",
@@ -245,7 +244,7 @@ const DailyQuestsSection = () => {
               </div>
               <div className="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center text-sm text-gray-400">
                 {xpToday} / {goalXp}
-              </div> */}
+              </div> 
             </div>
             <TreasureProgressSvg />
           </div>
@@ -587,8 +586,9 @@ const TreasureClosedSvg = (props: ComponentProps<"svg">) => {
 };
 
 const XpProgressSection = () => {
-  // const xpToday = useBoundStore((x) => x.xpToday());
-  // const goalXp = useBoundStore((x) => x.goalXp);
+   const { state } = useContext(Store)
+   const xpToday = state.xpSlice.xpToday;
+   const goalXp = state.goalXpSlice.goalXp;
   return (
     <article className="flex flex-col gap-5 rounded-2xl border-2 border-gray-200 p-6 font-bold text-gray-700">
       <div className="flex items-center justify-between">
@@ -603,18 +603,18 @@ const XpProgressSection = () => {
           <h3 className="font-normal text-gray-500">Daily goal</h3>
           <div className="flex items-center gap-5">
             <div className="relative h-4 w-full grow rounded-full bg-gray-200">
-              {/* {xpToday > 0 && (
+               {xpToday > 0 && (
                 <div
                   className="absolute left-0 top-0 h-4 rounded-full bg-yellow-400"
                   style={{ width: `${Math.min(1, xpToday / goalXp) * 100}%` }}
                 >
                   <div className="absolute left-2 right-2 top-1 h-[6px] rounded-full bg-yellow-300"></div>
                 </div>
-              )} */}
+              )} 
             </div>
-            {/* <div className="text-md shrink-0 font-normal text-gray-400">
+            <div className="text-md shrink-0 font-normal text-gray-400">
               {xpToday}/{goalXp} XP
-            </div> */}
+            </div> 
           </div>
         </div>
       </div>

@@ -38,21 +38,28 @@ import { toast } from 'react-toastify'
 
 type TileStatus = "LOCKED" | "ACTIVE" | "COMPLETE";
 
-const [ units, setUnits] = useState<Unit[]>([])
+function UnitList() {
+  const [units, setUnits] = useState<Unit[]>([]);
 
-export const fetchUnits = async() => {
-  await axios.get("http://localhost:5000/lessons/units")
-    .then((response) => {
-      setUnits(response.data);
-    })
-    .catch((error) => {
-      console.error("Error fetching units:", error);
-    });
-};
+  useEffect(() => {
+    async function fetchUnits() {
+      try {
+        const response = await axios.get("http://localhost:5000/lessons/units");
+        setUnits(response.data);
+      } catch (error) {
+        console.error("Error fetching units:", error);
+      }
+    }
 
-const tileStatus = (tile: Tile, lessonsCompleted: number): TileStatus => {
-  fetchUnits()
+    fetchUnits();
+  }, []);
+
+  return units;
+}
+
+export const tileStatus = (tile: Tile, lessonsCompleted: number): TileStatus => {
   const lessonsPerTile = 4;
+  const units = UnitList(); // Use the functional component to fetch units
   const tilesCompleted = Math.floor(lessonsCompleted / lessonsPerTile);
   const tiles = units.flatMap((unit) => unit.tiles);
   const tileIndex = tiles.findIndex((t) => t === tile);
@@ -239,6 +246,7 @@ const TileTooltip = ({
     window.addEventListener("click", containsTileTooltip, true);
     return () => window.removeEventListener("click", containsTileTooltip, true);
   }, [selectedTile, tileTooltipRef, closeTooltip, index]);
+  const units = UnitList();
 
   const unit = units.find((unit) => unit.unitNumber === unitNumber);
   const activeBackgroundColor = unit?.backgroundColor ?? "bg-green-500";
@@ -347,10 +355,9 @@ export const increaseLingots = (userId: number, by: number) => async (dispatch: 
 };
 
 const UnitSection = ({ unit }: { unit: Unit }): JSX.Element => {
+  const [selectedTile, setSelectedTile] = useState<null | number>(null);
   const navigate = useNavigate()
   const { state } = useContext(Store)
-
-  const [selectedTile, setSelectedTile] = useState<null | number>(null);
 
   useEffect(() => {
     const unselectTile = () => setSelectedTile(null);
@@ -515,6 +522,7 @@ const getTopBarColors = (
   backgroundColor: `bg-${string}`;
   borderColor: `border-${string}`;
 } => {
+  const units = UnitList();
   const defaultColors = {
     backgroundColor: "bg-[#58cc02]",
     borderColor: "border-[#46a302]",
@@ -541,6 +549,7 @@ const Learn = () => {
   }, [scrollY]);
 
   const topBarColors = getTopBarColors(scrollY);
+  const units = UnitList(); 
 
   return (
     <>

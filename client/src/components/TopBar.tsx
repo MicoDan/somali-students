@@ -76,7 +76,6 @@ export const TopBar = ({
   const { state } = useContext(Store)
   const streak = state.streakSlice.streak;
   const lingots = state.lingotSlice.lingots;
-  const language = state.languageSlice.language;
   return (
     <header className="fixed z-20 h-[58px] w-full">
       <div
@@ -87,7 +86,7 @@ export const TopBar = ({
             setMenu((x) => (x === "LANGUAGES" ? "HIDDEN" : "LANGUAGES"))
           }
         >
-          <Flag language={language} width={45} />
+          <Flag />
           <span className="sr-only">See languages</span>
         </button>
 
@@ -134,7 +133,7 @@ export const TopBar = ({
                   <div className="flex gap-5 p-5">
                     <div className="flex flex-col items-center justify-between gap-2">
                       <div className="rounded-2xl border-4 border-blue-400">
-                        <Flag language={language} width={80} />
+                        <Flag />
                       </div>
                       <span className="font-bold">Somali</span>
                     </div>

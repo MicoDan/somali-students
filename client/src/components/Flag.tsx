@@ -1,25 +1,12 @@
-// import type { StaticImageData } from "next/image";
-import _flagsSvg from "../../public/flags.svg";
-// import type { Language } from "~/utils/languages";
+import React from 'react';
+import somali from '/src/somali.png';
 
-// const flagsSvg = _flagsSvg as StaticImageData;
-
-export const Flag = ({
-  // language,
-  // width = 84,
-}: {
-  // language: Language;
-  // width?: number;
-}) => {
-  // const height = width * (19.3171 / 24);
+export const Flag: React.FC = () => {
   return (
-    <></>
-    // <svg viewBox={language.viewBox} style={{ height, width }}>
-    //   <image
-    //     height={flagsSvg.height}
-    //     href={flagsSvg.src}
-    //     width={flagsSvg.width}
-    //   ></image>
-    // </svg>
+    <img
+      className='h-6 w-6'
+      src={somali}
+      alt="Somali flag"
+    />
   );
 };

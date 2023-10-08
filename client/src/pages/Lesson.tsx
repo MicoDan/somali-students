@@ -12,7 +12,7 @@ import {
     LessonTopBarHeart,
     WomanSvg,
 } from "../components/Svgs";
-import womanPng from "../../public/woman.png";
+import womanPng from "/src/woman.png";
 import { Link } from "react-router-dom";
 import { Store } from "../redux/Share_store";
 import { toast } from "react-toastify";
@@ -63,19 +63,18 @@ const Lesson = () => {
     const [selectedAnswer, setSelectedAnswer] = useState<null | number>(null);
     const [correctAnswerShown, setCorrectAnswerShown] = useState(false);
     const [quitMessageShown, setQuitMessageShown] = useState(false);
-
     const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
+    const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
+    const [reviewLessonShown, setReviewLessonShown] = useState(false);
+    const [isStartingLesson, setIsStartingLesson] = useState(true);
 
     const startTime = useRef(Date.now());
     const endTime = useRef(startTime.current + 1000 * 60 * 3 + 1000 * 33);
-    const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
-    const [reviewLessonShown, setReviewLessonShown] = useState(false);
 
     const problem = lessonProblems[lessonProblem] ?? lessonProblem1;
 
     const totalCorrectAnswersNeeded = 2;
-
-    const [isStartingLesson, setIsStartingLesson] = useState(true);
+    
     const currentURL = window.location.href;
     const url = new URL(currentURL);
     const hasFastForward = url.searchParams.has("fast-forward");

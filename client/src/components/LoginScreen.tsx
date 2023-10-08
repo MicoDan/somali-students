@@ -44,9 +44,6 @@ export const LoginScreen = ({
       setLoginScreenState("HIDDEN");
     }
   }, [loginScreenState, loggedIn, setLoginScreenState]);
-
-
-
   const [ loading, setLoading ] = useState(loaderSlice.isLoading)
 
   const [loginInfo, setLoginInfo] = useState({

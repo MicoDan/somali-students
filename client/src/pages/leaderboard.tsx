@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
-// import { LeftBar } from "~/components/LeftBar";
-// import { BottomBar } from "~/components/BottomBar";
+import { LeftBar } from "../components/LeftBar";
+import { BottomBar } from "../components/BottomBar";
 
 import {
   BronzeLeagueSvg,
@@ -15,8 +15,6 @@ import {
 import dayjs from "dayjs";
 import { Link, useNavigate } from "react-router-dom";
 import { Store } from "../redux/Share_store";
-import { useLeaderboardUsers } from "../redux/useLeaderboards";
-// import { useLeaderboardUsers } from "~/hooks/useLeaderboard";
 
 const LeaderboardExplanationSection = () => {
   return (
@@ -67,7 +65,7 @@ const timeLeft = (): `${number} ${TimeLeftUnit}` => {
 
 const defaultPicture = "https://placekitten.com/100/100";
 
-const LeaderboardProfile = ({
+export const LeaderboardProfile = ({
   place,
   name,
   xp,
@@ -101,9 +99,9 @@ const LeaderboardProfile = ({
           width={48}
           height={48}
           className="h-12 w-12 rounded-full"
-          src={defaultPicture}
-          alt=""
+          xlinkHref={defaultPicture} // Use xlinkHref instead of src
         />
+
       </div>
       <div className="grow overflow-hidden overflow-ellipsis font-bold">
         {name}
@@ -132,8 +130,6 @@ const Leaderboard = () => {
   const leaderboardIsUnlocked = lessonsCompleted >= lessonsToUnlockLeaderboard;
 
   const leaderboardLeague = "Bronze League";
-
-  const leaderboardUsers = useLeaderboardUsers();
 
   return (
     <div>

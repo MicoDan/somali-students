@@ -6,7 +6,7 @@ const lessonRouter = express.Router();
 // Retrieve all units
 lessonRouter.get('/units', async (req, res) => {
   try {
-    const units = await UnitModel.find();
+    const units = await UnitModel.find({});
     res.json(units);
   } catch (error) {
     console.error(error);

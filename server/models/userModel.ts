@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
   soundEffects: { type: Boolean, default: true },
   speakingExercises: { type: Boolean, default: true },
   listeningExercises: { type: Boolean, default: true },
-  activeDays: { type: [String], default: [] }, 
+  activeDays: { type: Array, default: [] }, 
   streak: { type: Number, default: 0 },
   xpByDate: { type: Object, default: {} },
   xpToday: {type: Number, default: 0},
