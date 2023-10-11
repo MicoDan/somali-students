@@ -1,4 +1,4 @@
-import {GoalXpState, LanguageState, LessonState, LingotState, LoaderState, SoundSettingsState, StreakState, UserState, XpState} from './Interface.tsx'
+import { GoalXpState, LanguageState, LessonState, LingotState, LoaderState, SoundSettingsState, StreakState, UserState, XpState} from './Interface.tsx'
 
 export interface RootState {
     goalXpSlice: GoalXpState;

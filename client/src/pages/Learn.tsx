@@ -34,28 +34,36 @@ import { LoginScreen, useLoginScreen } from "../components/LoginScreen";
 import type { Tile, TileType, Unit } from "../utils/units";
 import { Store } from "../redux/Share_store";
 import { toast } from 'react-toastify'
+import Loader from "../components/Loader";
 
 
 type TileStatus = "LOCKED" | "ACTIVE" | "COMPLETE";
 
 function UnitList() {
   const [units, setUnits] = useState<Unit[]>([]);
+  const { dispatch } = useContext(Store);
 
   useEffect(() => {
     async function fetchUnits() {
       try {
+        dispatch({ type: 'SET_LOADING', payload: true });
         const response = await axios.get("http://localhost:5000/lessons/units");
         setUnits(response.data);
       } catch (error) {
+        dispatch({ type: 'SET_LOADING', payload: false });
+        toast.error('Failed to fetch units');
         console.error("Error fetching units:", error);
+      } finally {
+        dispatch({ type: 'SET_LOADING', payload: false });
       }
     }
 
-    fetchUnits();
-  }, []);
+    fetchUnits(); 
+  }, []); // Empty dependency array means this effect runs only once, when the component mounts
 
   return units;
 }
+
 
 export const tileStatus = (tile: Tile, lessonsCompleted: number): TileStatus => {
   const lessonsPerTile = 4;
@@ -331,7 +339,7 @@ export const increaseLessonsCompleted = (userId: number, by: number) => async (d
   try {
     // Sending a request to the backend to increase lessonsCompleted for the user.
     const { data } = await axios.post(`http://localhost:5000/${userId}/increaseLessonsCompleted`, by);
-    
+
     // Dispatching the updated data to the Redux store.
     dispatch({ type: 'INCREASE_LESSONS_COMPLETED', payload: data.lessonsCompleted });
   } catch (error) {
@@ -343,9 +351,9 @@ export const increaseLessonsCompleted = (userId: number, by: number) => async (d
 export const increaseLingots = (userId: number, by: number) => async (dispatch: any) => {
   try {
     // Sending a request to the backend to increase lingots for the user.
-    
+
     const { data } = await axios.post(`http://localhost:5000/users/${userId}/increaseLingots`, by);
-    
+
     // Dispatching the updated data to the Redux store.
     dispatch({ type: 'INCREASE_LINGOTS', payload: data.lingots });
   } catch (error) {
@@ -549,7 +557,7 @@ const Learn = () => {
   }, [scrollY]);
 
   const topBarColors = getTopBarColors(scrollY);
-  const units = UnitList(); 
+  const units = UnitList();
 
   return (
     <>
@@ -667,18 +675,22 @@ const UnitHeader = ({
   backgroundColor: `bg-${string}`;
   borderColor: `border-${string}`;
 }) => {
+  const { state } = useContext(Store)
+  const loading = state.loaderSlice.isLoading
   return (
     <article
       className={["max-w-2xl text-white sm:rounded-xl", backgroundColor].join(
         " "
       )}
     >
-      <header className="flex items-center justify-between gap-4 p-4">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-2xl font-bold">Unit {unitNumber}</h2>
-          <p className="text-lg">{description}</p>
-        </div>
-      </header>
+      {loading ? <Loader /> :
+        <header className="flex items-center justify-between gap-4 p-4">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-2xl font-bold">Unit {unitNumber}</h2>
+            <p className="text-lg">{description}</p>
+          </div>
+        </header>
+      }
     </article>
   );
 };

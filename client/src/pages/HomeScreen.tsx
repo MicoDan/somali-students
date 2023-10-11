@@ -1,5 +1,5 @@
 import { GlobeSvg } from '../components/Svgs'
-import _bgsnow from '/bg-snow.svg'
+import bgsnow from '/bg-snow.svg'
 import { LoginScreen, useLoginScreen } from '../components/LoginScreen';
 import { Link } from 'react-router-dom';
 import favicon from '/favicon.ico'
@@ -15,7 +15,7 @@ const HomeScreen = () => {
           <img className="inline-block w-16 h-16" src={favicon} alt='logo'/>Social
           </Link>
         </header>
-        <div className="flex min-h-screen flex-col items-center justify-center bg-[#235390] text-white md:flex-row md:gap-36" style={{ backgroundImage: `url(${_bgsnow})` }}>
+        <div className="flex min-h-screen flex-col items-center justify-center bg-[#235390] text-white md:flex-row md:gap-36" style={{ backgroundImage: `url(${bgsnow})` }}>
             <GlobeSvg className='h-fit w-7/12 md:w-[360px]' />
             <div>
                 <p className="mb-6 max-w-[600px] text-center text-3xl font-bold md:mb-12">

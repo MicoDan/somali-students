@@ -69,4 +69,3 @@ export interface SetXpThisWeekAction {
     payload: number;
 }
 
-

@@ -53,3 +53,4 @@ export interface XpState {
     xpToday: number;
     xpThisWeek: number;
 }
+

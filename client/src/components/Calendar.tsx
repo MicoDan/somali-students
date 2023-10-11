@@ -1,8 +1,7 @@
 import dayjs from "dayjs";
 import { ChevronLeftSvg, ChevronRightSvg } from "./Svgs";
 import { range } from "../utils/array-utils";
-import axios from "axios";
-import { toast } from "react-toastify";
+import { toDateString } from "../utils/dateString";
 
 const getCalendarDays = (now: dayjs.Dayjs): (number | null)[][] => {
   const startOfMonth = now.startOf("month");
@@ -38,17 +37,11 @@ export const Calendar = ({
   const staticNow = dayjs();
 
   const userData: Record<string, any> | null = JSON.parse(localStorage.getItem('userData') || 'null');
+
   const isActiveDay = async (date: dayjs.Dayjs | any) => {
-    try{
-      const { data } = await axios.post('http://localhost:5000/users/active', {
-        day: date,
-        userId: userData?._id
-      })
-      return data
-    } catch(error){
-      toast.error('failed to get active days')
-      console.log(error);
-    }
+    const dateString = toDateString(date)
+    const isActive  = await userData?.activeDays.includes(dateString)
+    return isActive
   }
 
   const calendarDays = getCalendarDays(now);
@@ -89,10 +82,12 @@ export const Calendar = ({
               {week.map((date, i) => {
                 const isActiveDate =
                   date !== null && isActiveDay(now.date(date));
+                  
                 const isCurrentDate =
                   date === staticNow.date() &&
                   now.month() === staticNow.month() &&
                   now.year() === staticNow.year();
+                  console.log(isCurrentDate);
                 return (
                   <div
                     key={i}

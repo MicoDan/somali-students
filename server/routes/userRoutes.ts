@@ -29,7 +29,6 @@ userRouter.get(
 userRouter.post("/active", (req: Request, res: Response) => {
   const { day, userId } = req.body;
   const dateString = toDateString(day);
-  console.log(dateString)
   if (!userId) {
     return res.status(400).json({ error: "userId is required" });
   }
@@ -37,14 +36,34 @@ userRouter.post("/active", (req: Request, res: Response) => {
 
   User.findById(userId)
     .then((user) => {
-      console.log(user);
-      
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
 
       const isActive = user.activeDays.includes(dateString);
       res.json({ isActive });
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    });
+});
+
+userRouter.post("/activeDays", (req: Request, res: Response) => {
+  const { userId } = req.body;
+  if (!userId) {
+    return res.status(400).json({ error: "userId is required" });
+  }
+  
+
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const activeDays = user.activeDays
+      res.json({ activeDays: activeDays });
     })
     .catch((error) => {
       console.error("Error:", error);

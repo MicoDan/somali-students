@@ -52,7 +52,6 @@ lessonRouter.post('/units', async (req, res) => {
         tiles, // Assuming tiles data is provided in the request body
       });
   
-      // Save the unit to the database
       await newUnit.save();
   
       res.status(201).json(newUnit); // Respond with the newly created unit
