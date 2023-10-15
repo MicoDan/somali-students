@@ -1,3 +1,4 @@
+import { Unit } from '../utils/units.ts';
 import {
   GoalXpState,
   LanguageState,
@@ -8,10 +9,12 @@ import {
   StreakState,
   UserState,
   XpState,
+  unitState,
 } from './Interface.tsx';
 
 
 const userData: Record<string, any> | null = JSON.parse(localStorage.getItem('userData') || 'null');
+const all_units: Array<Unit> | null = JSON.parse(localStorage.getItem('all_units') || 'null')
 
 
 export const initialState = {
@@ -53,4 +56,7 @@ export const initialState = {
     xpToday: userData ? userData.xpToday : '',
     xpThisWeek: userData ? userData.xpThisWeek : '',
   } as XpState,
+  unitSlice: {
+    units: all_units ? all_units : '',
+  } as unitState
 };

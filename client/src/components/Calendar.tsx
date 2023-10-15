@@ -87,7 +87,6 @@ export const Calendar = ({
                   date === staticNow.date() &&
                   now.month() === staticNow.month() &&
                   now.year() === staticNow.year();
-                  console.log(isCurrentDate);
                 return (
                   <div
                     key={i}

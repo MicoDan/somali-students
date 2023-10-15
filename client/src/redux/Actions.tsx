@@ -1,3 +1,5 @@
+import { Unit } from "../utils/units";
+
 // Define TypeScript types for actions
 export interface SetGoalXpAction {
     type: 'SET_GOAL_XP';
@@ -69,3 +71,7 @@ export interface SetXpThisWeekAction {
     payload: number;
 }
 
+export interface SetUnitsAction{
+    type: 'SET_UNITS';
+    payload: Array<Unit>;
+}

@@ -44,7 +44,7 @@ export const LoginScreen = ({
       setLoginScreenState("HIDDEN");
     }
   }, [loginScreenState, loggedIn, setLoginScreenState]);
-  const [ loading, setLoading ] = useState(loaderSlice.isLoading)
+  const [loading, setLoading] = useState(loaderSlice.isLoading)
 
   const [loginInfo, setLoginInfo] = useState({
     email: '',
@@ -62,8 +62,12 @@ export const LoginScreen = ({
     try {
       setLoading(true)
       const { data } = await axios.post('http://localhost:5000/users/signin', loginInfo);
-      dispatch({type: 'LOG_IN', payload: data})
+      dispatch({ type: 'LOG_IN', payload: data })
       localStorage.setItem('userData', JSON.stringify(data))
+      const response = await axios.get("http://localhost:5000/lessons/units");
+      dispatch({ type: 'SET_UNITS', payload: response.data})
+      console.log(response.data)
+      localStorage.setItem('all_units', JSON.stringify(response.data))
       setLoading(false)
       toast.success('login success')
       navigate('/learn')
@@ -82,7 +86,10 @@ export const LoginScreen = ({
       const { data } = await axios.post('http://localhost:5000/users/signup', signupInfo);
       setLoading(false)
       localStorage.setItem('userData', JSON.stringify(data))
-      dispatch({type: 'LOG_IN', payload: data})
+      dispatch({ type: 'LOG_IN', payload: data })
+      const response = await axios.get("http://localhost:5000/lessons/units");
+      dispatch({ type: 'SET_UNITS', payload: response.data})
+      localStorage.setItem('all_units', JSON.stringify(response.data))
       setLoading(false)
       toast.success('signup successful')
       navigate('/learn')
@@ -112,9 +119,7 @@ export const LoginScreen = ({
         "http://localhost:5000/users/picture",
         bodyFormData
       );
-
       setSignupInfo({ ...signupInfo, photo: response.data.secure_url });
-
       toast.success("Image uploaded successfully. Click Update to apply it");
     } catch (err) {
       toast.error('Image not uploaded successfully');

@@ -39,35 +39,12 @@ import Loader from "../components/Loader";
 
 type TileStatus = "LOCKED" | "ACTIVE" | "COMPLETE";
 
-function UnitList() {
-  const [units, setUnits] = useState<Unit[]>([]);
-  const { dispatch } = useContext(Store);
-
-  useEffect(() => {
-    async function fetchUnits() {
-      try {
-        dispatch({ type: 'SET_LOADING', payload: true });
-        const response = await axios.get("http://localhost:5000/lessons/units");
-        setUnits(response.data);
-      } catch (error) {
-        dispatch({ type: 'SET_LOADING', payload: false });
-        toast.error('Failed to fetch units');
-        console.error("Error fetching units:", error);
-      } finally {
-        dispatch({ type: 'SET_LOADING', payload: false });
-      }
-    }
-
-    fetchUnits(); 
-  }, []); // Empty dependency array means this effect runs only once, when the component mounts
-
-  return units;
-}
 
 
 export const tileStatus = (tile: Tile, lessonsCompleted: number): TileStatus => {
+  const { state } = useContext(Store)
   const lessonsPerTile = 4;
-  const units = UnitList(); // Use the functional component to fetch units
+  const units = state.unitSlice.units; // Use the functional component to fetch units
   const tilesCompleted = Math.floor(lessonsCompleted / lessonsPerTile);
   const tiles = units.flatMap((unit) => unit.tiles);
   const tileIndex = tiles.findIndex((t) => t === tile);
@@ -115,9 +92,9 @@ const TileIcon = ({
       );
     case "fast-forward":
       return status === "COMPLETE" ? (
-        <CheckmarkSvg />
+        <GoldenDumbbellSvg />
       ) : status === "ACTIVE" ? (
-        <StarSvg />
+        <GoldenDumbbellSvg />
       ) : (
         <FastForwardSvg />
       );
@@ -240,6 +217,7 @@ const TileTooltip = ({
   closeTooltip: () => void;
 }) => {
   const tileTooltipRef = useRef<HTMLDivElement | null>(null);
+  const { state } = useContext(Store)
 
   useEffect(() => {
     const containsTileTooltip = (event: MouseEvent) => {
@@ -254,10 +232,10 @@ const TileTooltip = ({
     window.addEventListener("click", containsTileTooltip, true);
     return () => window.removeEventListener("click", containsTileTooltip, true);
   }, [selectedTile, tileTooltipRef, closeTooltip, index]);
-  const units = UnitList();
+  const units = state.unitSlice.units
 
   const unit = units.find((unit) => unit.unitNumber === unitNumber);
-  const activeBackgroundColor = unit?.backgroundColor ?? "bg-green-500";
+  const activeBackgroundColor = unit?.backgroundColor ? unit.backgroundColor : "bg-green-500";
   const activeTextColor = unit?.textColor ?? "text-green-500";
 
   return (
@@ -530,7 +508,8 @@ const getTopBarColors = (
   backgroundColor: `bg-${string}`;
   borderColor: `border-${string}`;
 } => {
-  const units = UnitList();
+  const { state } = useContext(Store)
+  const units = state.unitSlice.units
   const defaultColors = {
     backgroundColor: "bg-[#58cc02]",
     borderColor: "border-[#46a302]",
@@ -555,9 +534,10 @@ const Learn = () => {
     document.addEventListener("scroll", updateScrollY);
     return () => document.removeEventListener("scroll", updateScrollY);
   }, [scrollY]);
+  const { state } = useContext(Store)
 
   const topBarColors = getTopBarColors(scrollY);
-  const units = UnitList();
+  const units = state.unitSlice.units;
 
   return (
     <>
@@ -672,16 +652,19 @@ const UnitHeader = ({
 }: {
   unitNumber: number;
   description: string;
-  backgroundColor: `bg-${string}`;
+  backgroundColor: `${string}`;
   borderColor: `border-${string}`;
 }) => {
   const { state } = useContext(Store)
   const loading = state.loaderSlice.isLoading
   return (
     <article
-      className={["max-w-2xl text-white sm:rounded-xl", backgroundColor].join(
+      className={["max-w-2xl text-white sm:rounded-xl "].join(
         " "
       )}
+      style={{
+        backgroundColor,
+      }}
     >
       {loading ? <Loader /> :
         <header className="flex items-center justify-between gap-4 p-4">

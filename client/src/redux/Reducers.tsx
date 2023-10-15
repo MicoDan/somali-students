@@ -1,4 +1,4 @@
-import { GoalXpState, LanguageState, LessonState, LingotState, LoaderState, SoundSettingsState, StreakState, UserState, XpState } from "./Interface";
+import { GoalXpState, LanguageState, LessonState, LingotState, LoaderState, SoundSettingsState, StreakState, UserState, XpState, unitState } from "./Interface";
 import { initialState } from "./initialState";
 import { RootAction } from "./RootAction";
 import dayjs from "dayjs";
@@ -108,3 +108,12 @@ export const xpSliceReducer = (state: XpState = initialState.xpSlice, action: Ro
         return state;
     }
 };
+
+export const unitSliceReducer = (state: unitState = initialState.unitSlice, action: RootAction): unitState => {
+    switch(action.type){
+        case 'SET_UNITS':
+            return {...state, units: action.payload}
+        default:
+            return state;
+    }
+}

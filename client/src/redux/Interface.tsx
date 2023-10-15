@@ -1,4 +1,5 @@
 import { DateString } from "../utils/dateString";
+import { Unit } from "../utils/units";
 
 // Define TypeScript types for state slices
 export interface GoalXpState {
@@ -53,4 +54,6 @@ export interface XpState {
     xpToday: number;
     xpThisWeek: number;
 }
-
+export interface unitState{
+    units: Array<Unit>;
+}

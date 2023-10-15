@@ -1,4 +1,4 @@
-import { GoalXpState, LanguageState, LessonState, LingotState, LoaderState, SoundSettingsState, StreakState, UserState, XpState} from './Interface.tsx'
+import { GoalXpState, LanguageState, LessonState, LingotState, LoaderState, SoundSettingsState, StreakState, UserState, XpState, unitState} from './Interface.tsx'
 
 export interface RootState {
     goalXpSlice: GoalXpState;
@@ -10,6 +10,7 @@ export interface RootState {
     streakSlice: StreakState;
     userSlice: UserState;
     xpSlice: XpState;
+    unitSlice: unitState;
   }
   
   // Define a TypeScript type for your actions

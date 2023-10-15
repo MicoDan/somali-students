@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   isAdmin: { type: Boolean, default: false }, 
   token: { type: String, default: '' }, 
   loggedIn: { type: Boolean, default: false }, 
-  goalXp: { type: Number, default: 0 },
+  goalXp: { type: Number, default: 20 },
   language: { type: String, default: '' },
   lessonsCompleted: { type: Number, default: 0 },
   lingots: { type: Number, default: 0 },
