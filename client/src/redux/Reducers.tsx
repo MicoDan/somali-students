@@ -1,7 +1,8 @@
 import { GoalXpState, LanguageState, LessonState, LingotState, LoaderState, SoundSettingsState, StreakState, UserState, XpState, unitState } from "./Interface";
-import { initialState } from "./initialState";
+import { initialState, userData } from "./initialState";
 import { RootAction } from "./RootAction";
 import dayjs from "dayjs";
+import axios from "axios";
 
 export const goalXpSliceReducer = (state: GoalXpState = initialState.goalXpSlice, action: RootAction): GoalXpState => {
     switch (action.type) {
@@ -65,23 +66,30 @@ export const soundSettingsSliceReducer = (state: SoundSettingsState = initialSta
 
 export const streakSliceReducer = (state: StreakState = initialState.streakSlice, action: RootAction): StreakState => {
     switch (action.type) {
-        case "ADD_TODAY":
-          const newActiveDays = new Set(state.activeDays);
-          const todayDateString = dayjs().format("YYYY-MM-DD"); // Get today's date as a string
-          newActiveDays.add(todayDateString);
-    
-          // Calculate the streak based on activeDays
-          let streak = state.streak;
-          let currentDate = dayjs();
-          while (newActiveDays.has(currentDate.format("YYYY-MM-DD"))) {
-            streak++;
-            currentDate = currentDate.subtract(1, "day");
-          }
-          return { ...state, activeDays: newActiveDays, streak };
-        default:
-          return state;
-      }
-};
+      case "ADD_TODAY":
+        // Send a request to increment the streak on the backend
+        axios.get(`http://localhost:5000/users/streak/${userData?._id}`)
+          .then((response) => {
+            if (response.data && response.data.streak) {
+              const newActiveDays = new Set(state.activeDays);
+              const todayDateString = dayjs().format("YYYY-MM-DD");
+              newActiveDays.add(todayDateString);
+              return { ...state, activeDays: newActiveDays, streak: response.data.streak };
+            }
+          })
+          .catch((error) => {
+            console.error("Error incrementing streak:", error);
+            return state; // Return the original state or handle the error as needed
+          });
+  
+        return state;
+  
+      default:
+        return state;
+    }
+  };
+  
+
 
 export const userSliceReducer = (state: UserState = initialState.userSlice, action: RootAction): UserState => {
     switch (action.type) {  
@@ -90,11 +98,13 @@ export const userSliceReducer = (state: UserState = initialState.userSlice, acti
             return { ...state, loggedIn: true };
         case 'LOG_OUT':
             // Implement logic to reset user state when logging out
-            return { ...initialState.userSlice };
+            
+            return { ...initialState.userSlice, loggedIn: false };
         default:
             return state;
     }
 }
+
     
 export const xpSliceReducer = (state: XpState = initialState.xpSlice, action: RootAction): XpState => {
     switch (action.type) {

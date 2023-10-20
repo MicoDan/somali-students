@@ -8,8 +8,13 @@ import Profile from './pages/profile'
 import Shop from './pages/shop'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import Coach from './pages/settings/coach'
+import Sound from './pages/settings/sound'
+import Account from './pages/settings/account'
 
 function App() {
+  
+
   return (
     <BrowserRouter>
       <ToastContainer position="bottom-center" limit={1} />
@@ -20,6 +25,9 @@ function App() {
         <Route path='/leaderboard' element={<Leaderboard />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/shop' element={<Shop />} />
+        <Route path='/settings/coach' element={<Coach />} />
+        <Route path='/settings/sound' element={<Sound />} />
+        <Route path='/settings/account' element={<Account />} />
       </Routes>
     </BrowserRouter>
   )

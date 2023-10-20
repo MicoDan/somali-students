@@ -751,7 +751,7 @@ const LessonComplete = ({
                         className={
                             "flex w-full items-center justify-center rounded-2xl border-b-4 border-green-600 bg-green-500 p-3 font-bold uppercase text-white transition hover:brightness-105 sm:min-w-[150px] sm:max-w-fit"
                         }
-                        to="learn"
+                        to="/learn"
                         onClick={() => {
                             increaseXp(userData?._id, correctAnswerCount);
                             addToday();

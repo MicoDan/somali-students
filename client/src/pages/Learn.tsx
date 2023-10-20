@@ -179,7 +179,7 @@ const getTileTooltipLeftOffset = ({
   return offsets[index % offsets.length] ?? tileTooltipLeftOffsets[0];
 };
 
-const getTileColors = ({
+export const getTileColors = ({
   tileType,
   status,
   defaultColors,
@@ -187,7 +187,7 @@ const getTileColors = ({
   tileType: TileType;
   status: TileStatus;
   defaultColors: `border-${string} bg-${string}`;
-}): `border-${string} bg-${string}` => {
+}): `border-${string} ${string}` => {
   switch (status) {
     case "LOCKED":
       if (tileType === "fast-forward") return defaultColors;
@@ -430,7 +430,8 @@ const UnitSection = ({ unit }: { unit: Unit }): JSX.Element => {
                               return;
                             }
                             setSelectedTile(i);
-                          }}
+                          }
+                        }
                         >
                           <TileIcon tileType={tile.type} status={status} />
                           <span className="sr-only">Show lesson</span>
@@ -659,12 +660,10 @@ const UnitHeader = ({
   const loading = state.loaderSlice.isLoading
   return (
     <article
-      className={["max-w-2xl text-white sm:rounded-xl "].join(
+      className={["max-w-2xl text-white sm:rounded-xl ", backgroundColor].join(
         " "
       )}
-      style={{
-        backgroundColor,
-      }}
+     
     >
       {loading ? <Loader /> :
         <header className="flex items-center justify-between gap-4 p-4">

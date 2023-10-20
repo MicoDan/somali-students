@@ -153,7 +153,7 @@ export const RightBar = () => {
         ) : null}
         <DailyQuestsSection />
         <XpProgressSection />
-        {!loggedIn && (
+        {loggedIn == false && (
           <CreateAProfileSection setLoginScreenState={setLoginScreenState} />
         )}
       </aside>
@@ -230,7 +230,7 @@ const DailyQuestsSection = () => {
       <div className="flex items-center gap-4">
         <LightningProgressSvg />
         <div className="flex flex-col gap-2">
-           <h3>Earn {goalXp} XP</h3> 
+           <h2>Earn {goalXp} XP</h2> 
           <div className="flex items-center">
             <div className="relative h-5 w-52 rounded-l-full bg-gray-200">
                <div

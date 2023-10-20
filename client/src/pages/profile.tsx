@@ -56,7 +56,7 @@ const ProfileTopSection = () => {
   const photo = state.userSlice.photo
 
   useEffect(() => {
-    if (!loggedIn) {
+    if (loggedIn == false) {
       navigate("/");
     }
     console.log(username)

@@ -119,7 +119,7 @@ const Leaderboard = () => {
   const lessonsCompleted = state.lessonSlice.lessonsCompleted
 
   useEffect(() => {
-    if (!loggedIn) {
+    if (loggedIn == false) {
       navigate("/");
     }
   }, [loggedIn]);

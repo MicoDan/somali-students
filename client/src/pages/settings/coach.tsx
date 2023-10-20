@@ -144,7 +144,7 @@ const Coach = () => {
 
   const setGoalXp = async (by: number) => {
     try{
-      const { data } = await axios.post(`http://localhost:5000/${id}/increaseXp`, by)
+      const { data } = await axios.post(`http://localhost:5000/users/increasexp/${id}`, { by })
       dispatch({type: 'SET_GOAL_XP', payload: data.goalXp})
       toast.success('GoalXp updated')
     } catch (error) {

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Unit } from '../utils/units.ts';
 import {
   GoalXpState,
@@ -13,48 +14,56 @@ import {
 } from './Interface.tsx';
 
 
-const userData: Record<string, any> | null = JSON.parse(localStorage.getItem('userData') || 'null');
+export let userData: Record<string, any> | null = JSON.parse(localStorage.getItem('userData') || 'null');
 const all_units: Array<Unit> | null = JSON.parse(localStorage.getItem('all_units') || 'null')
+
+const fetchItemsFromLocalStorage = async () => {
+  const { data } = await axios.get(`http://localhost:5000/users/user/${userData?._id}`)
+  userData = data;
+  console.log(userData);
+};
+
+window.addEventListener('beforeunload', fetchItemsFromLocalStorage);
 
 
 export const initialState = {
   goalXpSlice: {
-    goalXp: userData ? userData.xp : '',
+    goalXp: userData?.goalXp,
   } as GoalXpState,
   languageSlice: {
-    language: userData ? userData.language : '', 
+    language: userData?.language,
   } as LanguageState,
   lessonSlice: {
-    lessonsCompleted: userData ? userData.lessonsCompleted: '',
+    lessonsCompleted: userData?.lessonsCompleted,
   } as LessonState,
   lingotSlice: {
-    lingots: userData ? userData.lingots : '',
+    lingots: userData?.lingots,
   } as LingotState,
   loaderSlice: {
     isLoading: false,
   } as LoaderState,
   soundSlice: {
-    soundEffects: userData ? userData.soundEffects : '',
-    speakingExercises: userData ? userData.speackingExercises : '',
-    listeningExercises: userData ? userData.listeningExercises : '',
+    soundEffects: userData?.soundEffects,
+    speakingExercises: userData?.speackingExercises,
+    listeningExercises: userData?.listeningExercises,
   } as SoundSettingsState,
   streakSlice: {
     activeDays: new Set(),
-    streak: userData ? userData.streak : '',
+    streak: userData?.streak,
   } as StreakState,
   userSlice: {
-    _id: userData ? userData._id : '',
-    username: userData ? userData.username : '',
-    email: userData ? userData.email : '',
-    photo: userData ? userData.photo : '',
-    isAdmin: userData ? userData.isAdmin : false,
-    token: userData ? userData.token : '',
-    loggedIn: userData ? userData.loggedIn : false,
+    _id: userData?._id,
+    username: userData?.username,
+    email: userData?.email,
+    photo: userData?.photo,
+    isAdmin: userData?.isAdmin,
+    token: userData?.token,
+    loggedIn: userData?.loggedIn,
   } as UserState,
   xpSlice: {
-    xpByDate: userData ? userData.xpByDate : '',
-    xpToday: userData ? userData.xpToday : '',
-    xpThisWeek: userData ? userData.xpThisWeek : '',
+    xpByDate: userData?.xpByDate,
+    xpToday: userData?.xpToday,
+    xpThisWeek: userData?.xpThisWeek,
   } as XpState,
   unitSlice: {
     units: all_units ? all_units : '',

@@ -38,8 +38,9 @@ export const LeftBar = ({ selectedTab }: { selectedTab: Tab | null }) => {
   const bottomBarItems = useBottomBarItems();
 
   const logOut = () => {
-    dispatch({type: 'LOG_OUT'})
     localStorage.removeItem('userData')
+    localStorage.removeItem('all_units')
+    dispatch({type: 'LOG_OUT'})
     navigate('/')
   }
 
@@ -114,7 +115,7 @@ export const LeftBar = ({ selectedTab }: { selectedTab: Tab | null }) => {
                 </Link>
               </div>
               <div className="flex flex-col border-t-2 border-gray-300 py-2">
-                {!loggedIn && (
+                {loggedIn == false && (
                   <button
                     className="px-5 py-2 text-left uppercase hover:bg-gray-100"
                     onClick={() => setLoginScreenState("SIGNUP")}
@@ -134,7 +135,7 @@ export const LeftBar = ({ selectedTab }: { selectedTab: Tab | null }) => {
                 >
                   Help
                 </Link>
-                {!loggedIn && (
+                {loggedIn == false && (
                   <button
                     className="px-5 py-2 text-left uppercase hover:bg-gray-100"
                     onClick={() => setLoginScreenState("LOGIN")}
@@ -142,7 +143,7 @@ export const LeftBar = ({ selectedTab }: { selectedTab: Tab | null }) => {
                     Sign in
                   </button>
                 )}
-                {loggedIn && (
+                {loggedIn == true && (
                   <button
                     className="px-5 py-2 text-left uppercase hover:bg-gray-100"
                     onClick={logOut}

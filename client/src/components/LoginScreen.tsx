@@ -14,8 +14,7 @@ export type LoginScreenState = "HIDDEN" | "LOGIN" | "SIGNUP";
 
 export const useLoginScreen = () => {
   const { state } = useContext(Store);
-  const { userSlice } = state;
-  const loggedIn = userSlice.loggedIn;
+  const loggedIn = state.userSlice.loggedIn
   const queryState: LoginScreenState = (() => {
     if (loggedIn) return "HIDDEN";
     if (location.search.includes("login")) return "LOGIN";
@@ -66,7 +65,6 @@ export const LoginScreen = ({
       localStorage.setItem('userData', JSON.stringify(data))
       const response = await axios.get("http://localhost:5000/lessons/units");
       dispatch({ type: 'SET_UNITS', payload: response.data})
-      console.log(response.data)
       localStorage.setItem('all_units', JSON.stringify(response.data))
       setLoading(false)
       toast.success('login success')

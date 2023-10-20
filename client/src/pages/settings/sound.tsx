@@ -23,7 +23,7 @@ const Sound = () => {
   const setSoundEffects = async (soundEffect: boolean) => {
     try {
       const { data } = await axios.post(`http://localhost:5000/users/sound/${id}`, { soundEffect: soundEffect })
-      dispatch({ type: '', payload: data.soundEffect })
+      dispatch({ type: 'SET_SOUND_EFFECTS', payload: data.soundEffect })
       toast.success('sound effects updated successfully')
     } catch (error) {
       toast.error('failed to update sound effects')
@@ -33,7 +33,7 @@ const Sound = () => {
   const setSpeakingExercises = async (speakingEffect: boolean) => {
     try {
       const { data } = await axios.post(`http://localhost:5000/users/speaking/${id}`, { speakingEffect: speakingEffect })
-      dispatch({ type: '', payload: data.speakingEffect })
+      dispatch({ type: 'SET_SPEAKING_EXERCISES', payload: data.speakingEffect })
       toast.success('speaking effects updated successfully')
     } catch (error) {
       toast.error('failed to update speaking effects')
@@ -42,8 +42,8 @@ const Sound = () => {
   }
   const setListeningExercises = async (listeningEffect: boolean) => {
     try {
-      const { data } = await axios.post(`http://localhost:5000/users/listeing/${id}`, { listeningEffect: listeningEffect })
-      dispatch({ type: '', payload: data.listeningEffect })
+      const { data } = await axios.post(`http://localhost:5000/users/listening/${id}`, { listeningEffect: listeningEffect })
+      dispatch({ type: 'SET_LISTENING_EXERCISES', payload: data.listeningEffect })
       toast.success('Listening effects updated successfully')
     } catch (error) {
       toast.error('failed to update listening effects')

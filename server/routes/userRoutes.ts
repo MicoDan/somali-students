@@ -32,7 +32,6 @@ userRouter.post("/active", (req: Request, res: Response) => {
   if (!userId) {
     return res.status(400).json({ error: "userId is required" });
   }
-  
 
   User.findById(userId)
     .then((user) => {
@@ -54,7 +53,6 @@ userRouter.post("/activeDays", (req: Request, res: Response) => {
   if (!userId) {
     return res.status(400).json({ error: "userId is required" });
   }
-  
 
   User.findById(userId)
     .then((user) => {
@@ -62,7 +60,7 @@ userRouter.post("/activeDays", (req: Request, res: Response) => {
         return res.status(404).json({ error: "User not found" });
       }
 
-      const activeDays = user.activeDays
+      const activeDays = user.activeDays;
       res.json({ activeDays: activeDays });
     })
     .catch((error) => {
@@ -187,27 +185,27 @@ userRouter.put(
       }
       const updatedUser = await user.save();
       res.send({
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        photo: user.photo,
-        isAdmin: user.isAdmin,
-        token: generateToken(user),
-        loggedIn: user.loggedIn,
-        goalXp: user.goalXp,
-        language: user.language,
-        lessonsCompleted: user.lessonsCompleted,
-        lingots: user.lingots,
-        isLoading: user.isLoading,
-        soundEffects: user.soundEffects,
-        speakingExercises: user.speakingExercises,
-        listeningExercises: user.listeningExercises,
-        activeDays: user.activeDays,
-        streak: user.streak,
-        xpByDate: user.xpByDate,
-        xpToday: user.xpToday,
-        xpThisWeek: user.xpThisWeek,
-        isCurrentUser: user.isCurrentUser,
+        _id: updatedUser._id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        photo: updatedUser.photo,
+        isAdmin: updatedUser.isAdmin,
+        token: generateToken(updatedUser),
+        loggedIn: updatedUser.loggedIn,
+        goalXp: updatedUser.goalXp,
+        language: updatedUser.language,
+        lessonsCompleted: updatedUser.lessonsCompleted,
+        lingots: updatedUser.lingots,
+        isLoading: updatedUser.isLoading,
+        soundEffects: updatedUser.soundEffects,
+        speakingExercises: updatedUser.speakingExercises,
+        listeningExercises: updatedUser.listeningExercises,
+        activeDays: updatedUser.activeDays,
+        streak: updatedUser.streak,
+        xpByDate: updatedUser.xpByDate,
+        xpToday: updatedUser.xpToday,
+        xpThisWeek: updatedUser.xpThisWeek,
+        isCurrentUser: updatedUser.isCurrentUser,
       });
     } else {
       res.status(404).send("user not found");
@@ -227,6 +225,8 @@ userRouter.post("/:userId/increaseLessonsCompleted", async (req, res) => {
       { new: true, select: "lessonsCompleted" } // Select only lessonsCompleted field
     );
 
+    await updatedUser?.save();
+
     res.status(200).json({ lessonsCompleted: updatedUser?.lessonsCompleted });
   } catch (error) {
     res.status(500).json({ error: "Failed to increase lessonsCompleted" });
@@ -245,25 +245,27 @@ userRouter.post("/:userId/increaseLingots", async (req, res) => {
       { new: true, select: "lingots" } // Select only lingots field
     );
 
+    await updatedUser?.save();
+
     res.status(200).json({ lingots: updatedUser?.lingots });
   } catch (error) {
     res.status(500).json({ error: "Failed to increase lingots" });
   }
 });
 
-userRouter.post("/:userId/increaseXp", async (req, res) => {
+userRouter.post("/increasexp/:userId", async (req, res) => {
   const { userId } = req.params;
-  const by = req.body;
+  const { by } = req.body;
 
   try {
     // Find the user by ID and update lingots.
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { $inc: { goalXp: by } },
-      { new: true, select: "lingots" } // Select only lingots field
-    );
+    const user = await User.findById(userId);
+    if (user) {
+      user.goalXp = by;
+    }
+    await user?.save();
 
-    res.status(200).json({ goalXp: updatedUser?.goalXp });
+    res.status(200).json({ goalXp: user?.goalXp });
   } catch (error) {
     res.status(500).json({ error: "Failed to increase lingots" });
   }
@@ -379,6 +381,7 @@ userRouter.post("/spend-lingots", async (req: Request, res: Response) => {
   if (user) {
     if (user.lingots >= amount) {
       user.lingots -= amount;
+      await user?.save();
       res.status(200).json({ success: true, lingotsRemaining: user.lingots });
     } else {
       res.status(400).json({ success: false, message: "Not enough lingots" });
@@ -394,6 +397,7 @@ userRouter.post("/sound/:id", async (req: Request, res: Response) => {
   const user = await User.findById(id);
   if (user) {
     user.soundEffects = soundEffect;
+    await user?.save();
     res.status(200).json({ success: true, soundEffect: user.soundEffects });
   } else {
     res
@@ -407,6 +411,7 @@ userRouter.post("/listening/:id", async (req: Request, res: Response) => {
   const user = await User.findById(id);
   if (user) {
     user.listeningExercises = listeningEffect;
+    await user?.save();
     res
       .status(200)
       .json({ success: true, listeningEffect: user.listeningExercises });
@@ -416,12 +421,48 @@ userRouter.post("/listening/:id", async (req: Request, res: Response) => {
       .json({ success: false, message: "Listening exercises saved" });
   }
 });
+userRouter.get("/user/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (user) {
+    res
+      .status(200)
+      .json({
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        photo: user.photo,
+        isAdmin: user.isAdmin,
+        token: generateToken(user),
+        loggedIn: user.loggedIn,
+        goalXp: user.goalXp,
+        language: user.language,
+        lessonsCompleted: user.lessonsCompleted,
+        lingots: user.lingots,
+        isLoading: user.isLoading,
+        soundEffects: user.soundEffects,
+        speakingExercises: user.speakingExercises,
+        listeningExercises: user.listeningExercises,
+        activeDays: user.activeDays,
+        streak: user.streak,
+        xpByDate: user.xpByDate,
+        xpToday: user.xpToday,
+        xpThisWeek: user.xpThisWeek,
+        isCurrentUser: user.isCurrentUser,
+      });
+  } else {
+    res
+      .status(400)
+      .json({ success: false, message: "Failed to get the user and the credentials" });
+  }
+});
 userRouter.post("/speaking/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   const { speakingEffect } = req.body;
   const user = await User.findById(id);
   if (user) {
     user.speakingExercises = speakingEffect;
+    await user?.save();
     res
       .status(200)
       .json({ success: true, speakingEffect: user.speakingExercises });
@@ -431,5 +472,15 @@ userRouter.post("/speaking/:id", async (req: Request, res: Response) => {
       .json({ success: false, message: "Speaking effects not saved" });
   }
 });
+
+userRouter.get('/streak/:id', async(req: Request, res: Response) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if(user){
+    user.streak+=1
+  }
+  await user?.save()
+  res.status(200).json({ streak: user?.streak})
+})
 
 export default userRouter;

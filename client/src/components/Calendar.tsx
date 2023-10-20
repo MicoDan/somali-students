@@ -38,12 +38,8 @@ export const Calendar = ({
 
   const userData: Record<string, any> | null = JSON.parse(localStorage.getItem('userData') || 'null');
 
-  const isActiveDay = async (date: dayjs.Dayjs | any) => {
-    const dateString = toDateString(date)
-    const isActive  = await userData?.activeDays.includes(dateString)
-    return isActive
-  }
 
+  
   const calendarDays = getCalendarDays(now);
   return (
     <article className="flex flex-col rounded-xl border-2 border-gray-300 p-3 text-gray-400">
@@ -80,8 +76,8 @@ export const Calendar = ({
           return (
             <div key={i} className="flex justify-between">
               {week.map((date, i) => {
-                const isActiveDate =
-                  date !== null && isActiveDay(now.date(date));
+                const isActiveDate = date !== null && (!userData?.activeDays || userData?.activeDays.includes(toDateString(now.date(date))));
+
                   
                 const isCurrentDate =
                   date === staticNow.date() &&
